@@ -1,0 +1,4 @@
+ID;userId;name;email;jobTitle;active
+6f1c1c4e-1a0b-4e57-9f0e-0a1b2c3d4e01;mette;Mette Kjær;mette.kjaer@example.com;Ramp trainer;true
+6f1c1c4e-1a0b-4e57-9f0e-0a1b2c3d4e02;lars;Lars Holm;lars.holm@example.com;Ramp supervisor;true
+6f1c1c4e-1a0b-4e57-9f0e-0a1b2c3d4e03;sofie;Sofie Bang;sofie.bang@example.com;Ramp trainer;true

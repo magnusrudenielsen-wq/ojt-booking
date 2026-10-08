@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OJT Booking - local launchpad</title>
+  <!--
+    Local stand-in for SAP Build Work Zone, for demos and development only.
+    The tiles are the same apps that Work Zone shows from each app's
+    manifest.json (sap.app/crossNavigation).
+  -->
+  <script>
+    window["sap-ushell-config"] = {
+      defaultRenderer: "fiori2",
+      renderers: { fiori2: { componentData: { config: { search: "hidden", enableSearch: false } } } },
+      applications: {
+        "OJTObservation-book": {
+          title: "Book Observation",
+          description: "On-the-job training",
+          icon: "sap-icon://appointment",
+          additionalInformation: "SAPUI5.Component=ojt.booking",
+          applicationType: "URL",
+          url: "./book-observation/webapp"
+        },
+        "OJTAvailability-manage": {
+          title: "My Availability",
+          description: "For observers",
+          icon: "sap-icon://calendar",
+          additionalInformation: "SAPUI5.Component=ojt.availability",
+          applicationType: "URL",
+          url: "./my-availability/webapp"
+        },
+        "OJTObserver-manage": {
+          title: "Manage Observers",
+          description: "For OJT admins",
+          icon: "sap-icon://employee-approvals",
+          additionalInformation: "SAPUI5.Component=ojt.admin",
+          applicationType: "URL",
+          url: "./ojt-admin/webapp"
+        },
+        "OJTBooking-display": {
+          title: "All OJT Bookings",
+          description: "For OJT admins",
+          icon: "sap-icon://appointment-2",
+          additionalInformation: "SAPUI5.Component=ojt.appointments",
+          applicationType: "URL",
+          url: "./ojt-appointments/webapp"
+        }
+      }
+    };
+  </script>
+  <script id="sap-ushell-bootstrap" src="https://ui5.sap.com/test-resources/sap/ushell/bootstrap/sandbox.js"></script>
+  <script
+    id="sap-ui-bootstrap"
+    src="https://ui5.sap.com/resources/sap-ui-core.js"
+    data-sap-ui-libs="sap.m, sap.ushell, sap.fe.templates"
+    data-sap-ui-theme="sap_horizon"
+    data-sap-ui-compat-version="edge"
+    data-sap-ui-frame-options="allow"
+    data-sap-ui-binding-syntax="complex"
+    data-sap-ui-language="en"></script>
+  <script>
+    sap.ui.getCore().attachInit(() => sap.ushell.Container.createRenderer().placeAt("content"));
+  </script>
+</head>
+<body class="sapUiBody" id="content"></body>
+</html>

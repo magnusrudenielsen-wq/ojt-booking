@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:f="sap.ui.layout.form">
+  <Dialog id="addBlockDialog" title="{i18n>addBlockTitle}" contentWidth="24rem" busy="{view>/saving}" busyIndicatorDelay="0">
+    <content>
+      <f:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanL="4" labelSpanM="4" labelSpanS="12" columnsL="1" columnsM="1">
+        <f:content>
+          <Label text="{i18n>date}" labelFor="blockDay" required="true" />
+          <DatePicker id="blockDay" value="{view>/block/day}" valueFormat="yyyy-MM-dd" displayFormat="medium" minDate="{view>/today}" />
+          <Label text="{i18n>from}" labelFor="blockStart" required="true" />
+          <TimePicker id="blockStart" value="{view>/block/startTime}" valueFormat="HH:mm:ss" displayFormat="HH:mm" minutesStep="15" />
+          <Label text="{i18n>to}" labelFor="blockEnd" required="true" />
+          <TimePicker id="blockEnd" value="{view>/block/endTime}" valueFormat="HH:mm:ss" displayFormat="HH:mm" minutesStep="15" />
+          <Label text="{i18n>reason}" labelFor="blockReason" />
+          <Input id="blockReason" value="{view>/block/reason}" maxLength="120" />
+        </f:content>
+      </f:SimpleForm>
+    </content>
+    <beginButton>
+      <Button id="saveBlockButton" type="Emphasized" text="{i18n>save}" press=".onSaveBlock" />
+    </beginButton>
+    <endButton>
+      <Button text="{i18n>cancel}" press=".onCloseDialog" />
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>

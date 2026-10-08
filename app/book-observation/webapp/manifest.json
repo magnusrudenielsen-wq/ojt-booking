@@ -1,0 +1,155 @@
+{
+  "_version": "1.60.0",
+  "sap.app": {
+    "id": "ojt.booking",
+    "type": "application",
+    "i18n": {
+      "bundleName": "ojt.booking.i18n.i18n",
+      "supportedLocales": [
+        ""
+      ],
+      "fallbackLocale": ""
+    },
+    "applicationVersion": {
+      "version": "0.1.0"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "odata/v4/booking/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "book": {
+          "semanticObject": "OJTObservation",
+          "action": "book",
+          "title": "{{appTitle}}",
+          "subTitle": "{{appSubtitle}}",
+          "icon": "sap-icon://appointment",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://appointment"
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {},
+        "sap.ui.unified": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "ojt.booking.i18n.i18n",
+          "supportedLocales": [
+            ""
+          ],
+          "fallbackLocale": ""
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "ojt.booking.view.App",
+      "type": "XML",
+      "id": "app"
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "type": "View",
+        "viewType": "XML",
+        "path": "ojt.booking.view",
+        "controlId": "app",
+        "controlAggregation": "pages",
+        "async": true
+      },
+      "routes": [
+        {
+          "name": "observations",
+          "pattern": "",
+          "target": "observations"
+        },
+        {
+          "name": "book",
+          "pattern": "book/{itemId}:?query:",
+          "target": "book"
+        },
+        {
+          "name": "booked",
+          "pattern": "booked/{appointmentId}:?query:",
+          "target": "booked"
+        },
+        {
+          "name": "appointment",
+          "pattern": "appointment/{appointmentId}",
+          "target": "appointment"
+        }
+      ],
+      "targets": {
+        "observations": {
+          "id": "observations",
+          "name": "Observations",
+          "level": 1
+        },
+        "book": {
+          "id": "book",
+          "name": "Book",
+          "level": 2
+        },
+        "booked": {
+          "id": "booked",
+          "name": "Booked",
+          "level": 3
+        },
+        "appointment": {
+          "id": "appointment",
+          "name": "Appointment",
+          "level": 2
+        }
+      }
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "ojtbooking.service"
+  }
+}

@@ -1,0 +1,10 @@
+itemID;title;itemType;durationMinutes;location;preparation
+OJT-RAMP-012;Pushback with towbar;OJT_OBS;60;Ramp office B4, then stand B12;"Hi-vis vest and ear protection
+Headset (provided at B4)
+Towbar e-learning must be completed"
+OJT-BAG-004;Baggage loader operation;OJT_OBS;60;Baggage hall, belt 3;"Safety shoes and gloves
+Loader e-learning must be completed"
+OJT-DEICE-002;De-icing observation;OJT_OBS;90;De-icing pad East;"Winter PPE
+De-icing fluid safety sheet read"
+OJT-FOD-001;FOD walk;OJT_OBS;30;Apron C;Hi-vis vest
+EL-SAFETY-101;Airside safety e-learning;ELEARN;45;Online;

@@ -1,0 +1,74 @@
+<mvc:View
+  controllerName="ojt.booking.controller.Appointment"
+  xmlns="sap.m"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:f="sap.ui.layout.form">
+  <Page
+    id="appointmentPage"
+    title="{i18n>appointmentTitle}"
+    showNavButton="true"
+    navButtonPress=".onBackToList">
+    <content>
+      <ObjectHeader
+        id="appointmentHeader"
+        title="{itemTitle}"
+        responsive="true"
+        backgroundDesign="Solid">
+        <statuses>
+          <ObjectStatus
+            text="{ parts: ['status', { path: 'endAt', targetType: 'any' }], formatter: '.statusText' }"
+            state="{ parts: ['status', 'endAt'], formatter: '.statusState' }" />
+        </statuses>
+        <attributes>
+          <ObjectAttribute text="{itemId}" />
+        </attributes>
+      </ObjectHeader>
+
+      <MessageStrip
+        id="cutoffStrip"
+        visible="{view>/tooLate}"
+        text="{i18n>changeCutoff}"
+        type="Warning"
+        showIcon="true"
+        class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+
+      <f:SimpleForm
+        id="detailsForm"
+        title="{i18n>details}"
+        editable="false"
+        layout="ResponsiveGridLayout"
+        labelSpanL="3" labelSpanM="3" labelSpanS="12"
+        columnsL="1" columnsM="1">
+        <f:content>
+          <Label text="{i18n>when}" />
+          <Text text="{ parts: [{ path: 'startAt', targetType: 'any' }, { path: 'endAt', targetType: 'any' }], formatter: '.formatter.timeRange' }" />
+          <Label text="{i18n>observer}" />
+          <Text text="{observerName}" />
+          <Label text="{i18n>where}" />
+          <Text text="{location}" />
+          <Label text="{i18n>note}" visible="{= !!%{note} }" />
+          <Text text="{note}" visible="{= !!%{note} }" />
+        </f:content>
+      </f:SimpleForm>
+
+      <List
+        id="progressList"
+        headerText="{i18n>progress}"
+        showSeparators="Inner"
+        items="{ path: 'view>/steps', templateShareable: false }">
+        <StandardListItem
+          title="{view>title}"
+          description="{view>text}"
+          icon="{view>icon}"
+          highlight="{view>highlight}" />
+      </List>
+    </content>
+    <footer>
+      <OverflowToolbar visible="{view>/canChange}">
+        <ToolbarSpacer />
+        <Button id="cancelBookingButton" text="{i18n>cancelBooking}" type="Reject" press=".onCancelBooking" />
+        <Button id="moveButton" text="{i18n>moveBooking}" type="Emphasized" press=".onMove" />
+      </OverflowToolbar>
+    </footer>
+  </Page>
+</mvc:View>

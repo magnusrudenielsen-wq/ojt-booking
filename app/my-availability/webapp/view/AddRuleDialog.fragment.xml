@@ -1,0 +1,33 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:f="sap.ui.layout.form">
+  <Dialog id="addRuleDialog" title="{i18n>addRuleTitle}" contentWidth="24rem" busy="{view>/saving}" busyIndicatorDelay="0">
+    <content>
+      <f:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanL="4" labelSpanM="4" labelSpanS="12" columnsL="1" columnsM="1">
+        <f:content>
+          <Label text="{i18n>weekday}" labelFor="ruleWeekday" required="true" />
+          <Select id="ruleWeekday" selectedKey="{view>/rule/weekday}" width="100%">
+            <core:Item key="1" text="{i18n>monday}" />
+            <core:Item key="2" text="{i18n>tuesday}" />
+            <core:Item key="3" text="{i18n>wednesday}" />
+            <core:Item key="4" text="{i18n>thursday}" />
+            <core:Item key="5" text="{i18n>friday}" />
+            <core:Item key="6" text="{i18n>saturday}" />
+            <core:Item key="7" text="{i18n>sunday}" />
+          </Select>
+          <Label text="{i18n>from}" labelFor="ruleStart" required="true" />
+          <TimePicker id="ruleStart" value="{view>/rule/startTime}" valueFormat="HH:mm:ss" displayFormat="HH:mm" minutesStep="15" />
+          <Label text="{i18n>to}" labelFor="ruleEnd" required="true" />
+          <TimePicker id="ruleEnd" value="{view>/rule/endTime}" valueFormat="HH:mm:ss" displayFormat="HH:mm" minutesStep="15" />
+        </f:content>
+      </f:SimpleForm>
+    </content>
+    <beginButton>
+      <Button id="saveRuleButton" type="Emphasized" text="{i18n>save}" press=".onSaveRule" />
+    </beginButton>
+    <endButton>
+      <Button text="{i18n>cancel}" press=".onCloseDialog" />
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,154 @@
+{
+  "name": "ojt-booking",
+  "version": "0.1.0",
+  "description": "OJT observation booking (demo): SAP CAP + SAPUI5, reads observation context from SAP SuccessFactors Learning without writing to it",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@cap-js/hana": "^3",
+    "@sap/cds": "^10",
+    "@sap/xssec": "^4",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^3",
+    "@sap/cds-dk": "^10"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch": "cds watch",
+    "test": "node --test"
+  },
+  "cds": {
+    "ojt": {
+      "timezone": "Europe/Copenhagen",
+      "observationItemType": "OJT_OBS",
+      "bookingHorizonDays": 28,
+      "minLeadHours": 2,
+      "changeCutoffHours": 24,
+      "reminderHoursBefore": 24,
+      "organizerMailbox": "ojt-booking@example.com"
+    },
+    "requires": {
+      "SFLearning": {
+        "kind": "odata",
+        "model": "srv/external/SFLearning",
+        "[production]": {
+          "credentials": {
+            "destination": "SF_LEARNING",
+            "path": "/learning/odatav4/public"
+          }
+        }
+      },
+      "MSGraph": {
+        "kind": "rest",
+        "[production]": {
+          "credentials": {
+            "destination": "MS_GRAPH"
+          }
+        }
+      },
+      "auth": {
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "jonas": {
+              "password": "",
+              "roles": [
+                "Employee"
+              ],
+              "attr": {
+                "givenName": "Jonas",
+                "familyName": "Hansen",
+                "email": "jonas.hansen@example.com"
+              }
+            },
+            "anna": {
+              "password": "",
+              "roles": [
+                "Employee"
+              ],
+              "attr": {
+                "givenName": "Anna",
+                "familyName": "Lund",
+                "email": "anna.lund@example.com"
+              }
+            },
+            "mette": {
+              "password": "",
+              "roles": [
+                "Observer"
+              ],
+              "attr": {
+                "givenName": "Mette",
+                "familyName": "Kj\u00e6r",
+                "email": "mette.kjaer@example.com"
+              }
+            },
+            "lars": {
+              "password": "",
+              "roles": [
+                "Observer"
+              ],
+              "attr": {
+                "givenName": "Lars",
+                "familyName": "Holm",
+                "email": "lars.holm@example.com"
+              }
+            },
+            "sofie": {
+              "password": "",
+              "roles": [
+                "Observer"
+              ],
+              "attr": {
+                "givenName": "Sofie",
+                "familyName": "Bang",
+                "email": "sofie.bang@example.com"
+              }
+            },
+            "admin": {
+              "password": "",
+              "roles": [
+                "OJTAdmin",
+                "Employee",
+                "Observer"
+              ],
+              "attr": {
+                "givenName": "OJT",
+                "familyName": "Admin"
+              }
+            },
+            "jobs": {
+              "password": "",
+              "roles": [
+                "JobScheduler"
+              ]
+            },
+            "*": false
+          }
+        },
+        "[production]": {
+          "kind": "xsuaa"
+        }
+      },
+      "db": {
+        "[development]": {
+          "kind": "sqlite",
+          "credentials": {
+            "url": ":memory:"
+          }
+        },
+        "[production]": {
+          "kind": "hana"
+        }
+      },
+      "destinations": true,
+      "html5-repo": true,
+      "workzone": true
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.OJTAdmin",
+      "description": "OJTAdmin"
+    },
+    {
+      "name": "$XSAPPNAME.Employee",
+      "description": "Employee"
+    },
+    {
+      "name": "$XSAPPNAME.JobScheduler",
+      "description": "JobScheduler"
+    },
+    {
+      "name": "$XSAPPNAME.Observer",
+      "description": "Observer"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "OJTAdmin",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.OJTAdmin"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "Employee",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.Employee"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "JobScheduler",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.JobScheduler"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "Observer",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.Observer"
+      ],
+      "attribute-references": []
+    }
+  ]
+}

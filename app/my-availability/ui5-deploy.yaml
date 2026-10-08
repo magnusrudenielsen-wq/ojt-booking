@@ -1,0 +1,21 @@
+# Builds the app for the HTML5 Application Repository (used by mta.yaml)
+specVersion: "3.0"
+metadata:
+  name: ojt.availability
+type: application
+resources:
+  configuration:
+    propertiesFileSourceEncoding: UTF-8
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: ui5-task-zipper
+      afterTask: generateCachebusterInfo
+      configuration:
+        archiveName: ojtavailability
+        relativePaths: true
+        additionalFiles:
+          - xs-app.json

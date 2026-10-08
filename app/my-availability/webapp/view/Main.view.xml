@@ -1,0 +1,182 @@
+<mvc:View
+  controllerName="ojt.availability.controller.Main"
+  xmlns="sap.m"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:core="sap.ui.core"
+  xmlns:u="sap.ui.unified"
+  displayBlock="true"
+  height="100%">
+  <App id="app">
+    <Page id="page" title="{view>/title}">
+      <content>
+        <IconTabBar
+          id="tabs"
+          expandable="false"
+          headerBackgroundDesign="Solid"
+          class="sapUiResponsiveContentPadding">
+          <items>
+
+            <IconTabFilter key="calendar" text="{i18n>tabCalendar}" icon="sap-icon://calendar">
+              <SinglePlanningCalendar
+                id="calendar"
+                title="{i18n>calendarTitle}"
+                calendarWeekNumbering="ISO_8601"
+                startHour="6"
+                endHour="20"
+                fullDay="false"
+                startDate="{view>/startDate}"
+                startDateChange=".onStartDateChange"
+                viewChange=".onStartDateChange"
+                appointmentSelect=".onAppointmentSelect"
+                legend="legend"
+                appointments="{ path: 'view>/entries', templateShareable: false }">
+                <actions>
+                  <Button text="{i18n>addAvailability}" icon="sap-icon://add" press=".onAddRule" />
+                  <Button text="{i18n>blockTime}" icon="sap-icon://locked" press=".onAddBlock" />
+                </actions>
+                <views>
+                  <SinglePlanningCalendarWorkWeekView key="WorkWeek" title="{i18n>workWeek}" />
+                  <SinglePlanningCalendarWeekView key="Week" title="{i18n>week}" />
+                  <SinglePlanningCalendarDayView key="Day" title="{i18n>day}" />
+                </views>
+                <appointments>
+                  <u:CalendarAppointment
+                    title="{view>title}"
+                    text="{view>text}"
+                    icon="{view>icon}"
+                    color="{view>color}"
+                    startDate="{view>start}"
+                    endDate="{view>end}" />
+                </appointments>
+              </SinglePlanningCalendar>
+              <PlanningCalendarLegend id="legend" appointmentItemsHeader="">
+                <appointmentItems>
+                  <u:CalendarLegendItem text="{i18n>legendOpen}" color="#5DC122" />
+                  <u:CalendarLegendItem text="{i18n>legendBooked}" color="#0070F2" />
+                  <u:CalendarLegendItem text="{i18n>legendBlocked}" color="#E76500" />
+                </appointmentItems>
+              </PlanningCalendarLegend>
+            </IconTabFilter>
+
+            <IconTabFilter key="rules" text="{i18n>tabRules}" icon="sap-icon://date-time">
+              <MessageStrip text="{i18n>rulesInfo}" showIcon="true" class="sapUiSmallMarginBottom" />
+              <Table
+                id="rulesTable"
+                noDataText="{i18n>noRules}"
+                items="{ path: '/MyRules', sorter: [{ path: 'weekday' }, { path: 'startTime' }] }">
+                <headerToolbar>
+                  <OverflowToolbar>
+                    <Title text="{i18n>rulesTitle}" level="H2" />
+                    <ToolbarSpacer />
+                    <Button text="{i18n>addAvailability}" icon="sap-icon://add" type="Transparent" press=".onAddRule" />
+                  </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                  <Column><Text text="{i18n>weekday}" /></Column>
+                  <Column><Text text="{i18n>from}" /></Column>
+                  <Column><Text text="{i18n>to}" /></Column>
+                  <Column hAlign="End" width="4rem" />
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{dayName}" />
+                      <Text text="{ path: 'startTime', targetType: 'any', formatter: '.shortTime' }" />
+                      <Text text="{ path: 'endTime', targetType: 'any', formatter: '.shortTime' }" />
+                      <Button icon="sap-icon://delete" type="Transparent" tooltip="{i18n>delete}" press=".onDeleteRow" />
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+
+            <IconTabFilter key="blocked" text="{i18n>tabBlocked}" icon="sap-icon://locked">
+              <MessageStrip text="{i18n>blockedInfo}" showIcon="true" class="sapUiSmallMarginBottom" />
+              <Table
+                id="blockedTable"
+                noDataText="{i18n>noBlocked}"
+                items="{ path: '/MyBlockedTimes', sorter: [{ path: 'day' }, { path: 'startTime' }] }">
+                <headerToolbar>
+                  <OverflowToolbar>
+                    <Title text="{i18n>blockedTitle}" level="H2" />
+                    <ToolbarSpacer />
+                    <Button text="{i18n>blockTime}" icon="sap-icon://add" type="Transparent" press=".onAddBlock" />
+                  </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                  <Column><Text text="{i18n>date}" /></Column>
+                  <Column><Text text="{i18n>from}" /></Column>
+                  <Column><Text text="{i18n>to}" /></Column>
+                  <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>reason}" /></Column>
+                  <Column hAlign="End" width="4rem" />
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{ path: 'day', targetType: 'any', formatter: '.formatter.date' }" />
+                      <Text text="{ path: 'startTime', targetType: 'any', formatter: '.shortTime' }" />
+                      <Text text="{ path: 'endTime', targetType: 'any', formatter: '.shortTime' }" />
+                      <Text text="{reason}" />
+                      <Button icon="sap-icon://delete" type="Transparent" tooltip="{i18n>delete}" press=".onDeleteRow" />
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+
+            <IconTabFilter key="bookings" text="{i18n>tabBookings}" icon="sap-icon://appointment">
+              <Table
+                id="bookingsTable"
+                noDataText="{i18n>noBookings}"
+                items="{
+                  path: '/MyAppointments',
+                  filters: [{ path: 'status', operator: 'EQ', value1: 'Booked' }],
+                  sorter: { path: 'startAt' }
+                }">
+                <headerToolbar>
+                  <OverflowToolbar>
+                    <Title text="{i18n>bookingsTitle}" level="H2" />
+                  </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                  <Column><Text text="{i18n>when}" /></Column>
+                  <Column><Text text="{i18n>employee}" /></Column>
+                  <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>observation}" /></Column>
+                  <Column minScreenWidth="Desktop" demandPopin="true"><Text text="{i18n>where}" /></Column>
+                  <Column minScreenWidth="Desktop" demandPopin="true"><Text text="{i18n>note}" /></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{ parts: [{ path: 'startAt', targetType: 'any' }, { path: 'endAt', targetType: 'any' }], formatter: '.formatter.timeRange' }" />
+                      <Text text="{employeeName}" />
+                      <Text text="{itemTitle}" />
+                      <Text text="{location}" />
+                      <Text text="{note}" />
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+
+            <IconTabFilter key="qualifications" text="{i18n>tabQualifications}" icon="sap-icon://education">
+              <MessageStrip text="{i18n>qualificationsInfo}" showIcon="true" class="sapUiSmallMarginBottom" />
+              <List
+                id="qualificationsList"
+                headerText="{i18n>qualificationsTitle}"
+                noDataText="{i18n>noQualifications}"
+                items="{ path: '/MyQualifications', sorter: { path: 'itemTitle' } }">
+                <StandardListItem
+                  title="{itemTitle}"
+                  description="{itemId}"
+                  info="{ path: 'validTo', targetType: 'any', formatter: '.validToText' }"
+                  icon="sap-icon://education" />
+              </List>
+            </IconTabFilter>
+
+          </items>
+        </IconTabBar>
+      </content>
+    </Page>
+  </App>
+</mvc:View>

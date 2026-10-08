@@ -1,0 +1,20 @@
+<mvc:View
+  controllerName="ojt.booking.controller.Booked"
+  xmlns="sap.m"
+  xmlns:mvc="sap.ui.core.mvc">
+  <Page id="bookedPage" title="{i18n>bookedTitle}" busy="{view>/busy}" busyIndicatorDelay="0">
+    <content>
+      <IllustratedMessage
+        id="bookedMessage"
+        illustrationType="sapIllus-SuccessHighFive"
+        title="{view>/title}"
+        description="{view>/description}"
+        enableVerticalResponsiveness="true">
+        <additionalContent>
+          <Button text="{i18n>viewBooking}" type="Emphasized" press=".onViewBooking" />
+          <Button text="{i18n>backToObservations}" press=".onBackToList" />
+        </additionalContent>
+      </IllustratedMessage>
+    </content>
+  </Page>
+</mvc:View>

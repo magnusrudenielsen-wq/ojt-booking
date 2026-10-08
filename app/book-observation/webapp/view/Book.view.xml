@@ -1,0 +1,99 @@
+<mvc:View
+  controllerName="ojt.booking.controller.Book"
+  xmlns="sap.m"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:core="sap.ui.core"
+  xmlns:l="sap.ui.layout"
+  xmlns:u="sap.ui.unified">
+  <Page
+    id="bookPage"
+    title="{= ${view>/reschedule} ? ${i18n>moveTitle} : ${i18n>bookTitle} }"
+    showNavButton="true"
+    navButtonPress=".onNavBack"
+    busy="{view>/busy}"
+    busyIndicatorDelay="0">
+    <content>
+      <ObjectHeader
+        id="itemHeader"
+        title="{title}"
+        responsive="true"
+        backgroundDesign="Solid">
+        <attributes>
+          <ObjectAttribute title="{i18n>duration}" text="{ path: 'durationMinutes', formatter: '.durationText' }" />
+          <ObjectAttribute title="{i18n>where}" text="{location}" />
+          <ObjectAttribute title="{i18n>dueDate}" text="{ path: 'dueDate', targetType: 'any', formatter: '.formatter.date' }" />
+        </attributes>
+      </ObjectHeader>
+
+      <MessageStrip
+        id="rescheduleStrip"
+        visible="{view>/reschedule}"
+        text="{view>/rescheduleText}"
+        type="Information"
+        showIcon="true"
+        class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+      <MessageStrip
+        id="errorStrip"
+        visible="{= !!${view>/error} }"
+        text="{view>/error}"
+        type="Warning"
+        showIcon="true"
+        showCloseButton="true"
+        close=".onErrorClose"
+        class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+
+      <l:Grid defaultSpan="XL6 L6 M12 S12" class="sapUiSmallMarginTop">
+        <VBox class="sapUiSmallMarginBeginEnd">
+          <Label text="{i18n>observer}" labelFor="observerSelect" />
+          <Select
+            id="observerSelect"
+            width="100%"
+            forceSelection="true"
+            selectedKey="{view>/observerId}"
+            change=".onObserverChange"
+            items="{ path: 'view>/observers', templateShareable: false }">
+            <core:Item key="{view>ID}" text="{view>name}" />
+          </Select>
+          <Title text="{i18n>pickDay}" level="H3" class="sapUiSmallMarginTop sapUiTinyMarginBottom" />
+          <u:Calendar
+            id="calendar"
+            width="100%"
+            calendarWeekNumbering="ISO_8601"
+            minDate="{view>/minDate}"
+            maxDate="{view>/maxDate}"
+            select=".onDaySelect"
+            specialDates="{ path: 'view>/specialDates', templateShareable: false }">
+            <u:specialDates>
+              <u:DateTypeRange startDate="{view>date}" type="Type08" tooltip="{i18n>availableDay}" />
+            </u:specialDates>
+          </u:Calendar>
+        </VBox>
+        <VBox class="sapUiSmallMarginBeginEnd">
+          <List
+            id="slotList"
+            headerText="{view>/dayTitle}"
+            mode="SingleSelectMaster"
+            noDataText="{view>/noSlotsText}"
+            selectionChange=".onSlotSelect"
+            items="{ path: 'view>/daySlots', templateShareable: false }">
+            <StandardListItem
+              title="{ parts: ['view>startAt', 'view>endAt'], formatter: '.formatter.slotTime' }"
+              description="{view>observerName}"
+              icon="sap-icon://appointment-2" />
+          </List>
+        </VBox>
+      </l:Grid>
+    </content>
+    <footer>
+      <OverflowToolbar>
+        <ToolbarSpacer />
+        <Button
+          id="continueButton"
+          type="Emphasized"
+          text="{view>/continueText}"
+          enabled="{= !!${view>/selectedSlot} }"
+          press=".onContinue" />
+      </OverflowToolbar>
+    </footer>
+  </Page>
+</mvc:View>

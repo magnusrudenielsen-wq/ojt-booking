@@ -1,0 +1,202 @@
+_schema-version: 3.3.0
+ID: ojt-booking
+version: 0.1.0
+description: "OJT observation booking (demo): SAP CAP + SAPUI5, reads observation context from SAP SuccessFactors Learning without writing to it"
+parameters:
+  enable-parallel-deployments: true
+  deploy_mode: html5-repo
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+modules:
+  - name: ojt-booking-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      instances: 1
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: ojt-booking-auth
+      - name: ojt-booking-db
+      - name: ojt-booking-destination
+
+  - name: ojt-booking-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: ojt-booking-db
+
+  - name: ojt-booking-app-deployer
+    type: com.sap.application.content
+    path: .
+    build-parameters:
+      build-result: resources/
+      requires:
+        - name: ojtbooking
+          artifacts:
+            - ojtbooking.zip
+          target-path: resources/
+        - name: ojtavailability
+          artifacts:
+            - ojtavailability.zip
+          target-path: resources/
+        - name: ojtadmin
+          artifacts:
+            - ojtadmin.zip
+          target-path: resources/
+        - name: ojtappointments
+          artifacts:
+            - ojtappointments.zip
+          target-path: resources/
+    requires:
+      - name: ojt-booking-auth
+      - name: srv-api
+      - name: ojt-booking-html5-repo-host
+        parameters:
+          content-target: true
+          config:
+            HTML5Runtime_enabled: true
+    parameters:
+      config:
+        destinations:
+          - Name: srv-api
+            URL: ~{srv-api/srv-url}
+            Authentication: NoAuthentication
+            Type: HTTP
+            ProxyType: Internet
+            ForwardAuthToken: true
+            DynamicDestination: true
+
+  - name: ojtbooking
+    type: html5
+    path: app/book-observation
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+  - name: ojtavailability
+    type: html5
+    path: app/my-availability
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+  - name: ojtadmin
+    type: html5
+    path: app/ojt-admin
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+  - name: ojtappointments
+    type: html5
+    path: app/ojt-appointments
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+  - name: ojt-booking-destinations
+    type: com.sap.application.content
+    requires:
+      - name: ojt-booking-auth
+        parameters:
+          service-key:
+            name: ojt-booking-auth-key
+      - name: ojt-booking-html5-repo-host
+        parameters:
+          service-key:
+            name: ojt-booking-html5-repo-host-key
+      - name: srv-api
+      - name: ojt-booking-destination
+        parameters:
+          content-target: true
+    build-parameters:
+      no-source: true
+    parameters:
+      content:
+        instance:
+          existing_destinations_policy: update
+          destinations:
+            - Name: ojt-booking-html5-repository
+              ServiceInstanceName: ojt-booking-html5-repo-host
+              ServiceKeyName: ojt-booking-html5-repo-host-key
+              sap.cloud.service: ojtbooking.service
+            - Name: ojt-booking-auth
+              Authentication: OAuth2UserTokenExchange
+              ServiceInstanceName: ojt-booking-auth
+              ServiceKeyName: ojt-booking-auth-key
+              sap.cloud.service: ojtbooking.service
+
+resources:
+  - name: ojt-booking-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: ojt-booking-${org}-${space}
+        tenant-mode: dedicated
+        oauth2-configuration:
+          credential-types:
+            - "binding-secret"
+            - "x509"
+        role-collections:
+          - name: 'OJTAdmin (ojt-booking ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.OJTAdmin'
+          - name: 'Employee (ojt-booking ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Employee'
+          - name: 'JobScheduler (ojt-booking ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.JobScheduler'
+          - name: 'Observer (ojt-booking ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Observer'
+  - name: ojt-booking-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+  - name: ojt-booking-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+    requires:
+      - name: srv-api
+
+  - name: ojt-booking-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host

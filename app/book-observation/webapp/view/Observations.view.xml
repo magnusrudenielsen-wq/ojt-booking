@@ -1,0 +1,39 @@
+<mvc:View
+  controllerName="ojt.booking.controller.Observations"
+  xmlns="sap.m"
+  xmlns:mvc="sap.ui.core.mvc">
+  <Page id="observationsPage" title="{i18n>observationsTitle}">
+    <content>
+      <MessageStrip
+        id="infoStrip"
+        text="{i18n>observationsInfo}"
+        showIcon="true"
+        class="sapUiSmallMargin" />
+      <List
+        id="list"
+        noDataText="{i18n>noObservations}"
+        busyIndicatorDelay="0"
+        items="{
+          path: '/MyObservations',
+          sorter: { path: 'statusOrder', group: '.groupByStatus' }
+        }">
+        <ObjectListItem
+          title="{title}"
+          type="{= %{status} === 'Completed' ? 'Inactive' : 'Navigation' }"
+          press=".onItemPress">
+          <firstStatus>
+            <ObjectStatus
+              text="{ path: 'status', formatter: '.statusText' }"
+              state="{ path: 'status', formatter: '.statusState' }" />
+          </firstStatus>
+          <attributes>
+            <ObjectAttribute text="{ parts: ['itemId', { path: 'dueDate', targetType: 'any' }, 'durationMinutes'], formatter: '.itemLine' }" />
+            <ObjectAttribute
+              text="{ parts: ['status', { path: 'appointmentStart', targetType: 'any' }, { path: 'appointmentEnd', targetType: 'any' }, 'observerName', { path: 'completedOn', targetType: 'any' }], formatter: '.statusLine' }"
+              visible="{= %{status} !== 'ToBook' }" />
+          </attributes>
+        </ObjectListItem>
+      </List>
+    </content>
+  </Page>
+</mvc:View>

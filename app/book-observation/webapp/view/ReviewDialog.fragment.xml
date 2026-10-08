@@ -1,0 +1,59 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:f="sap.ui.layout.form">
+  <Dialog
+    id="reviewDialog"
+    title="{= ${view>/reschedule} ? ${i18n>reviewMoveTitle} : ${i18n>reviewTitle} }"
+    contentWidth="30rem"
+    busy="{view>/saving}"
+    busyIndicatorDelay="0">
+    <content>
+      <f:SimpleForm
+        editable="false"
+        layout="ResponsiveGridLayout"
+        labelSpanL="4" labelSpanM="4" labelSpanS="12"
+        columnsL="1" columnsM="1">
+        <f:content>
+          <Label text="{i18n>observation}" />
+          <Text text="{view>/review/itemTitle}" />
+          <Label text="{i18n>when}" />
+          <Text text="{view>/review/when}" />
+          <Label text="{i18n>observer}" />
+          <Text text="{view>/review/observerName}" />
+          <Label text="{i18n>where}" />
+          <Text text="{view>/review/location}" />
+          <Label text="{i18n>currently}" visible="{view>/reschedule}" />
+          <Text text="{view>/review/current}" visible="{view>/reschedule}" />
+        </f:content>
+      </f:SimpleForm>
+      <MessageStrip
+        text="{view>/review/bring}"
+        visible="{= !!${view>/review/bring} }"
+        type="Information"
+        showIcon="true"
+        class="sapUiSmallMarginBeginEnd" />
+      <VBox class="sapUiSmallMargin" visible="{= !${view>/reschedule} }">
+        <Label text="{i18n>noteLabel}" labelFor="noteInput" />
+        <TextArea
+          id="noteInput"
+          value="{view>/review/note}"
+          rows="3"
+          maxLength="500"
+          width="100%"
+          placeholder="{i18n>notePlaceholder}" />
+      </VBox>
+      <Text text="{view>/review/nextSteps}" class="sapUiSmallMargin" />
+    </content>
+    <beginButton>
+      <Button
+        id="confirmButton"
+        type="Emphasized"
+        text="{= ${view>/reschedule} ? ${i18n>confirmMove} : ${i18n>confirmBooking} }"
+        press=".onConfirm" />
+    </beginButton>
+    <endButton>
+      <Button text="{i18n>cancel}" press=".onCloseReview" />
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>
