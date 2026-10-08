@@ -2,28 +2,33 @@
   controllerName="ojt.booking.controller.Book"
   xmlns="sap.m"
   xmlns:mvc="sap.ui.core.mvc"
-  xmlns:core="sap.ui.core"
-  xmlns:l="sap.ui.layout"
-  xmlns:u="sap.ui.unified">
+  xmlns:core="sap.ui.core">
   <Page
     id="bookPage"
+    class="ojtPage"
     title="{= ${view>/reschedule} ? ${i18n>moveTitle} : ${i18n>bookTitle} }"
     showNavButton="true"
     navButtonPress=".onNavBack"
     busy="{view>/busy}"
     busyIndicatorDelay="0">
     <content>
-      <ObjectHeader
-        id="itemHeader"
-        title="{title}"
-        responsive="true"
-        backgroundDesign="Solid">
-        <attributes>
-          <ObjectAttribute title="{i18n>duration}" text="{ path: 'durationMinutes', formatter: '.durationText' }" />
-          <ObjectAttribute title="{i18n>where}" text="{location}" />
-          <ObjectAttribute title="{i18n>dueDate}" text="{ path: 'dueDate', targetType: 'any', formatter: '.formatter.date' }" />
-        </attributes>
-      </ObjectHeader>
+      <VBox id="itemHeader" class="ojtItemHeader">
+        <Title text="{title}" titleStyle="H3" wrapping="true" class="ojtItemTitle" />
+        <HBox wrap="Wrap" class="ojtItemFacts">
+          <HBox alignItems="Center" class="ojtChip">
+            <core:Icon src="sap-icon://fob-watch" class="ojtChipIcon" />
+            <Text text="{ path: 'durationMinutes', formatter: '.durationText' }" />
+          </HBox>
+          <HBox alignItems="Center" class="ojtChip">
+            <core:Icon src="sap-icon://map-2" class="ojtChipIcon" />
+            <Text text="{location}" />
+          </HBox>
+          <HBox alignItems="Center" class="ojtChip">
+            <core:Icon src="sap-icon://calendar" class="ojtChipIcon" />
+            <Text text="{ path: 'dueDate', targetType: 'any', formatter: '.dueText' }" />
+          </HBox>
+        </HBox>
+      </VBox>
 
       <MessageStrip
         id="rescheduleStrip"
@@ -31,7 +36,7 @@
         text="{view>/rescheduleText}"
         type="Information"
         showIcon="true"
-        class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+        class="ojtStrip" />
       <MessageStrip
         id="errorStrip"
         visible="{= !!${view>/error} }"
@@ -40,59 +45,99 @@
         showIcon="true"
         showCloseButton="true"
         close=".onErrorClose"
-        class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+        class="ojtStrip" />
 
-      <l:Grid defaultSpan="XL6 L6 M12 S12" class="sapUiSmallMarginTop">
-        <VBox class="sapUiSmallMarginBeginEnd">
-          <Label text="{i18n>observer}" labelFor="observerSelect" />
-          <Select
-            id="observerSelect"
-            width="100%"
-            forceSelection="true"
-            selectedKey="{view>/observerId}"
-            change=".onObserverChange"
-            items="{ path: 'view>/observers', templateShareable: false }">
-            <core:Item key="{view>ID}" text="{view>name}" />
-          </Select>
-          <Title text="{i18n>pickDay}" level="H3" class="sapUiSmallMarginTop sapUiTinyMarginBottom" />
-          <u:Calendar
-            id="calendar"
-            width="100%"
-            calendarWeekNumbering="ISO_8601"
-            minDate="{view>/minDate}"
-            maxDate="{view>/maxDate}"
-            select=".onDaySelect"
-            specialDates="{ path: 'view>/specialDates', templateShareable: false }">
-            <u:specialDates>
-              <u:DateTypeRange startDate="{view>date}" type="Type08" tooltip="{i18n>availableDay}" />
-            </u:specialDates>
-          </u:Calendar>
-        </VBox>
-        <VBox class="sapUiSmallMarginBeginEnd">
-          <List
-            id="slotList"
-            headerText="{view>/dayTitle}"
-            mode="SingleSelectMaster"
-            noDataText="{view>/noSlotsText}"
-            selectionChange=".onSlotSelect"
-            items="{ path: 'view>/daySlots', templateShareable: false }">
-            <StandardListItem
-              title="{ parts: ['view>startAt', 'view>endAt'], formatter: '.formatter.slotTime' }"
-              description="{view>observerName}"
-              icon="sap-icon://appointment-2" />
-          </List>
-        </VBox>
-      </l:Grid>
+      <VBox class="ojtPlanner">
+        <HBox justifyContent="SpaceBetween" alignItems="End" wrap="Wrap" class="ojtPlannerBar">
+          <VBox class="ojtObserverPick">
+            <Label text="{i18n>observer}" labelFor="observerSelect" />
+            <Select
+              id="observerSelect"
+              width="100%"
+              forceSelection="true"
+              selectedKey="{view>/observerId}"
+              change=".onObserverChange"
+              items="{ path: 'view>/observers', templateShareable: false }">
+              <core:Item key="{view>ID}" text="{view>name}" />
+            </Select>
+          </VBox>
+
+          <HBox alignItems="Center" class="ojtWeekNav">
+            <Button
+              id="prevWeek"
+              icon="sap-icon://navigation-left-arrow"
+              tooltip="{i18n>prevWeek}"
+              enabled="{= ${view>/week/index} > 0 }"
+              press=".onPrevWeek" />
+            <VBox alignItems="Center" class="ojtWeekLabel">
+              <Title id="weekTitle" text="{view>/week/title}" titleStyle="H4" />
+              <Text text="{view>/week/range}" class="ojtWeekRange" />
+              <Text text="{view>/week/counter}" class="ojtWeekCounter" />
+            </VBox>
+            <Button
+              id="nextWeek"
+              icon="sap-icon://navigation-right-arrow"
+              tooltip="{i18n>nextWeek}"
+              enabled="{= ${view>/week/index} &lt; ${view>/week/count} - 1 }"
+              press=".onNextWeek" />
+          </HBox>
+        </HBox>
+
+        <HBox alignItems="Center" justifyContent="SpaceBetween" wrap="Wrap" class="ojtWeekInfo">
+          <Text text="{view>/week/summary}" />
+          <Link
+            text="{view>/week/nextFreeText}"
+            visible="{= !!${view>/week/nextFreeText} }"
+            press=".onJumpToNextFree" />
+        </HBox>
+
+        <HBox
+          id="weekGrid"
+          renderType="Bare"
+          class="ojtWeek"
+          items="{ path: 'view>/week/days', templateShareable: false }">
+          <VBox class="ojtDay">
+            <customData>
+              <core:CustomData key="state" value="{view>state}" writeToDom="true" />
+            </customData>
+            <VBox class="ojtDayHead">
+              <Text text="{view>weekday}" class="ojtDayName" />
+              <Text text="{view>date}" class="ojtDayDate" />
+            </VBox>
+            <HBox
+              renderType="Bare"
+              class="ojtDaySlots"
+              items="{ path: 'view>slots', templateShareable: false }">
+              <Button
+                text="{view>label}"
+                tooltip="{view>tooltip}"
+                type="{= ${view>startAt} === ${view>/selectedSlot/startAt} &amp;&amp; ${view>observerId} === ${view>/selectedSlot/observerId} ? 'Emphasized' : 'Default' }"
+                press=".onSlotPress"
+                class="ojtSlot" />
+            </HBox>
+            <Text text="{i18n>noTimes}" visible="{= ${view>slots}.length === 0 }" class="ojtDayEmpty" />
+          </VBox>
+        </HBox>
+      </VBox>
     </content>
     <footer>
       <OverflowToolbar>
+        <Text text="{view>/selectedText}" visible="{= !!${view>/selectedSlot} }" wrapping="false" class="ojtSelectedText">
+          <layoutData>
+            <OverflowToolbarLayoutData shrinkable="true" />
+          </layoutData>
+        </Text>
         <ToolbarSpacer />
         <Button
           id="continueButton"
           type="Emphasized"
-          text="{view>/continueText}"
+          text="{i18n>continue}"
           enabled="{= !!${view>/selectedSlot} }"
-          press=".onContinue" />
+          press=".onContinue">
+          <layoutData>
+            <OverflowToolbarLayoutData priority="NeverOverflow" />
+          </layoutData>
+        </Button>
       </OverflowToolbar>
     </footer>
   </Page>

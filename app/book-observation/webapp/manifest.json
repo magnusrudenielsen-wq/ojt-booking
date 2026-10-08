@@ -65,12 +65,19 @@
         "sap.m": {},
         "sap.ui.core": {},
         "sap.ui.layout": {},
-        "sap.ui.unified": {}
+        "sap.f": {}
       }
     },
     "contentDensities": {
       "compact": true,
       "cozy": true
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
     },
     "models": {
       "i18n": {

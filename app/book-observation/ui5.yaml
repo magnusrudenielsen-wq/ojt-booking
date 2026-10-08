@@ -8,6 +8,9 @@ server:
       afterMiddleware: compression
       configuration:
         ignoreCertErrors: false
+        backend:
+          - path: /odata
+            url: http://localhost:4004
         ui5:
           path:
             - /resources

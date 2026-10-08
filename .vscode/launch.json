@@ -5,7 +5,7 @@
             "name": "Start book-observation",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\book-observation",
+            "cwd": "${workspaceFolder}/app/book-observation",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -30,7 +30,7 @@
             "name": "Start book-observation Mock",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\book-observation",
+            "cwd": "${workspaceFolder}/app/book-observation",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -56,7 +56,7 @@
             "name": "Start book-observation Local",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\book-observation",
+            "cwd": "${workspaceFolder}/app/book-observation",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -82,7 +82,7 @@
             "name": "Start my-availability",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\my-availability",
+            "cwd": "${workspaceFolder}/app/my-availability",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -107,7 +107,7 @@
             "name": "Start my-availability Local",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\my-availability",
+            "cwd": "${workspaceFolder}/app/my-availability",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -133,7 +133,7 @@
             "name": "Start my-availability Mock",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\my-availability",
+            "cwd": "${workspaceFolder}/app/my-availability",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -159,7 +159,7 @@
             "name": "Start ojt-admin",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\ojt-admin",
+            "cwd": "${workspaceFolder}/app/ojt-admin",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -184,7 +184,7 @@
             "name": "Start ojt-admin Local",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\ojt-admin",
+            "cwd": "${workspaceFolder}/app/ojt-admin",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -210,7 +210,7 @@
             "name": "Start ojt-admin Mock",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\ojt-admin",
+            "cwd": "${workspaceFolder}/app/ojt-admin",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -236,7 +236,7 @@
             "name": "Start ojt-appointments",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\ojt-appointments",
+            "cwd": "${workspaceFolder}/app/ojt-appointments",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -261,7 +261,7 @@
             "name": "Start ojt-appointments Local",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\ojt-appointments",
+            "cwd": "${workspaceFolder}/app/ojt-appointments",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"
@@ -287,7 +287,7 @@
             "name": "Start ojt-appointments Mock",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}/app\\c:\\Users\\mrn\\VSCode\\ojt-booking\\app\\ojt-appointments",
+            "cwd": "${workspaceFolder}/app/ojt-appointments",
             "runtimeExecutable": "npx",
             "windows": {
                 "runtimeExecutable": "npx.cmd"

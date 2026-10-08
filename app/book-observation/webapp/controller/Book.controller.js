@@ -1,9 +1,28 @@
 sap.ui.define([
   "ojt/booking/controller/BaseController",
   "sap/ui/model/json/JSONModel",
-  "sap/ui/unified/DateRange"
-], (BaseController, JSONModel, DateRange) => {
+  "sap/ui/core/format/DateFormat"
+], (BaseController, JSONModel, DateFormat) => {
   "use strict";
+
+  const WEEK_MS = 7 * 24 * 3600e3;
+  const weekdayFormat = DateFormat.getDateInstance({ pattern: "EEE" });
+  const dateFormat = DateFormat.getDateInstance({ pattern: "d MMM" });
+
+  const today = () => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+  const addDays = (date, days) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+  /** Monday of the week that contains the date (local time) */
+  const startOfWeek = (date) => addDays(date, -((date.getDay() + 6) % 7));
+  /** ISO 8601 week number: the week that contains the year's first Thursday is week 1 */
+  const isoWeek = (date) => {
+    const thursday = addDays(date, 3 - ((date.getDay() + 6) % 7));
+    const jan1 = new Date(thursday.getFullYear(), 0, 1);
+    return 1 + Math.floor(Math.round((thursday - jan1) / 864e5) / 7);
+  };
 
   return BaseController.extend("ojt.booking.controller.Book", {
     onInit() {
@@ -17,8 +36,7 @@ sap.ui.define([
       this._itemId = args.itemId;
       this._appointmentId = query.appointment || null;
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      this._weeks = [];
       this.getModel("view").setData({
         busy: true,
         reschedule: !!this._appointmentId,
@@ -27,18 +45,11 @@ sap.ui.define([
         observers: [],
         observerId: "",
         slots: [],
-        specialDates: [],
-        daySlots: [],
-        selectedDay: null,
+        week: { index: -1, count: 0, days: [] },
         selectedSlot: null,
-        dayTitle: this.getText("freeTimesNoDay"),
-        noSlotsText: this.getText("pickDayFirst"),
-        continueText: this.getText("continue"),
-        minDate: today,
-        maxDate: null,
+        selectedText: "",
         review: {}
       });
-      this.byId("calendar").removeAllSelectedDates();
 
       const key = encodeURIComponent(this._itemId.replace(/'/g, "''"));
       this.getView().bindElement({ path: "/MyObservations('" + key + "')" });
@@ -71,7 +82,11 @@ sap.ui.define([
       return minutes ? this.getText("durationValue", [minutes]) : "";
     },
 
-    /** Loads free slots from the server and marks the days that have any. */
+    dueText(dueDate) {
+      return dueDate ? this.getText("dueOn", [this.formatter.date(dueDate)]) : "";
+    },
+
+    /** Loads free slots for the whole booking horizon and splits them into weeks. */
     async _loadSlots() {
       const model = this.getModel("view");
       const slots = await this.callFunction("freeSlots", [
@@ -80,47 +95,92 @@ sap.ui.define([
         ["fromDate", null, "Date"],
         ["toDate", null, "Date"]
       ]);
-      const days = [...new Set(slots.map((s) => this.formatter.dayKey(s.startAt)))];
       model.setProperty("/slots", slots);
-      model.setProperty("/specialDates", days.map((d) => ({ date: this.formatter.fromEdmDate(d) })));
-      model.setProperty("/maxDate", days.length ? this.formatter.fromEdmDate(days[days.length - 1]) : null);
-
-      if (!slots.length) {
-        this._showDay(null);
-        model.setProperty("/noSlotsText", this.getText("noSlotsAtAll"));
-        return;
-      }
-      // Keep the chosen day if it still has times, otherwise jump to the first free day
-      const selected = model.getProperty("/selectedDay");
-      this._selectDay(selected && days.includes(selected) ? selected : days[0]);
-    },
-
-    _selectDay(dayKey) {
-      const calendar = this.byId("calendar");
-      const date = this.formatter.fromEdmDate(dayKey);
-      calendar.removeAllSelectedDates();
-      calendar.addSelectedDate(new DateRange({ startDate: date }));
-      calendar.focusDate(date);
-      this._showDay(dayKey);
-    },
-
-    _showDay(dayKey) {
-      const model = this.getModel("view");
-      const daySlots = dayKey ? model.getProperty("/slots").filter((s) => this.formatter.dayKey(s.startAt) === dayKey) : [];
-      model.setProperty("/selectedDay", dayKey);
-      model.setProperty("/daySlots", daySlots);
-      model.setProperty("/dayTitle", dayKey ? this.getText("freeTimes", [this.formatter.day(this.formatter.fromEdmDate(dayKey))]) : this.getText("freeTimesNoDay"));
-      model.setProperty("/noSlotsText", this.getText(dayKey ? "noSlotsDay" : "pickDayFirst"));
       this._setSlot(null);
-      this.byId("slotList").removeSelections(true);
+
+      // Weeks run Monday-Sunday, from this week up to the week of the last free time
+      const thisWeek = startOfWeek(today());
+      const lastDay = slots.length ? this.formatter.fromEdmDate(this.formatter.dayKey(slots[slots.length - 1].startAt)) : today();
+      const count = Math.round((startOfWeek(lastDay) - thisWeek) / WEEK_MS) + 1;
+      this._weeks = Array.from({ length: count }, (_, i) => addDays(thisWeek, i * 7));
+
+      // Stay on the week the user was looking at if it still has times, otherwise go to the first free week
+      const current = model.getProperty("/week/index");
+      const keep = current >= 0 && current < count && this._slotsInWeek(current).length;
+      this._showWeek(keep ? current : Math.max(0, this._nextFreeWeek(-1)));
+    },
+
+    _slotsInWeek(index) {
+      const from = this._weeks[index], to = addDays(from, 7);
+      return this.getModel("view").getProperty("/slots").filter((s) => {
+        const d = new Date(s.startAt);
+        return d >= from && d < to;
+      });
+    },
+
+    /** Index of the first week after `index` that has free times, or -1. */
+    _nextFreeWeek(index) {
+      for (let i = index + 1; i < this._weeks.length; i++) {
+        if (this._slotsInWeek(i).length) { return i; }
+      }
+      return -1;
+    },
+
+    _showWeek(index) {
+      const model = this.getModel("view");
+      const monday = this._weeks[index];
+      const anyObserver = !model.getProperty("/observerId");
+      const weekSlots = this._slotsInWeek(index);
+      const todayKey = this.formatter.dayKey(today());
+
+      const days = Array.from({ length: 7 }, (_, i) => {
+        const date = addDays(monday, i);
+        const key = this.formatter.dayKey(date);
+        const slots = weekSlots
+          .filter((s) => this.formatter.dayKey(s.startAt) === key)
+          .map((s) => ({
+            ...s,
+            label: this.formatter.time(s.startAt) + (anyObserver ? " · " + s.observerName.split(" ")[0] : ""),
+            tooltip: this.formatter.slotTime(s.startAt, s.endAt) + ", " + s.observerName
+          }));
+        let state = slots.length ? "free" : "empty";
+        if (key < todayKey) { state = "past"; } else if (key === todayKey) { state = "today"; }
+        return {
+          key,
+          weekday: weekdayFormat.format(date),
+          date: dateFormat.format(date),
+          state,
+          slots
+        };
+      });
+
+      const next = weekSlots.length ? -1 : this._nextFreeWeek(index);
+      const firstNext = next >= 0 ? this._slotsInWeek(next)[0] : null;
+      const total = model.getProperty("/slots").length;
+      let summary = this.getText("weekFreeNone");
+      if (!total) { summary = this.getText("noSlotsAtAll"); }
+      else if (weekSlots.length === 1) { summary = this.getText("weekFreeOne"); }
+      else if (weekSlots.length) { summary = this.getText("weekFree", [weekSlots.length]); }
+
+      model.setProperty("/week", {
+        index,
+        count: this._weeks.length,
+        title: this.getText("weekTitle", [isoWeek(monday)]),
+        range: this.getText("weekRange", [dateFormat.format(monday), dateFormat.format(addDays(monday, 6))]),
+        counter: this.getText("weekCounter", [index + 1, this._weeks.length]),
+        summary,
+        nextFreeText: firstNext ? this.getText("nextFree", [this.formatter.day(firstNext.startAt)]) : "",
+        nextFreeIndex: next,
+        days
+      });
     },
 
     _setSlot(slot) {
       const model = this.getModel("view");
       model.setProperty("/selectedSlot", slot);
-      model.setProperty("/continueText", slot
-        ? this.getText("continueWith", [this.formatter.day(slot.startAt) + " " + this.formatter.time(slot.startAt)])
-        : this.getText("continue"));
+      model.setProperty("/selectedText", slot
+        ? this.getText("selectedSlot", [this.formatter.timeRange(slot.startAt, slot.endAt), slot.observerName])
+        : "");
     },
 
     async onObserverChange() {
@@ -135,14 +195,24 @@ sap.ui.define([
       }
     },
 
-    onDaySelect(event) {
-      const range = event.getSource().getSelectedDates()[0];
-      this._showDay(range ? this.formatter.dayKey(range.getStartDate()) : null);
+    onPrevWeek() {
+      this._showWeek(Math.max(0, this.getModel("view").getProperty("/week/index") - 1));
     },
 
-    onSlotSelect(event) {
-      const item = event.getParameter("listItem");
-      this._setSlot(item ? item.getBindingContext("view").getObject() : null);
+    onNextWeek() {
+      this._showWeek(Math.min(this._weeks.length - 1, this.getModel("view").getProperty("/week/index") + 1));
+    },
+
+    onJumpToNextFree() {
+      const next = this.getModel("view").getProperty("/week/nextFreeIndex");
+      if (next >= 0) { this._showWeek(next); }
+    },
+
+    onSlotPress(event) {
+      const slot = event.getSource().getBindingContext("view").getObject();
+      const current = this.getModel("view").getProperty("/selectedSlot");
+      const same = current && current.startAt === slot.startAt && current.observerId === slot.observerId;
+      this._setSlot(same ? null : slot);
     },
 
     onErrorClose() {

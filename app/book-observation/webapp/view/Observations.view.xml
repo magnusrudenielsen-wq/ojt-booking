@@ -1,39 +1,104 @@
 <mvc:View
   controllerName="ojt.booking.controller.Observations"
   xmlns="sap.m"
-  xmlns:mvc="sap.ui.core.mvc">
-  <Page id="observationsPage" title="{i18n>observationsTitle}">
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:core="sap.ui.core"
+  xmlns:f="sap.f"
+  xmlns:grid="sap.ui.layout.cssgrid">
+  <Page id="observationsPage" showHeader="false" class="ojtPage">
     <content>
-      <MessageStrip
-        id="infoStrip"
-        text="{i18n>observationsInfo}"
-        showIcon="true"
-        class="sapUiSmallMargin" />
-      <List
+      <VBox id="hero" class="ojtHero">
+        <Title text="{i18n>observationsTitle}" titleStyle="H2" wrapping="true" class="ojtHeroTitle" />
+        <Text text="{i18n>observationsInfo}" class="ojtHeroText" />
+        <HBox wrap="Wrap" class="ojtStats">
+          <VBox class="ojtStat ojtStatToBook">
+            <Text text="{summary>/toBook}" class="ojtStatValue" />
+            <Text text="{i18n>statusToBook}" class="ojtStatLabel" />
+          </VBox>
+          <VBox class="ojtStat ojtStatBooked">
+            <Text text="{summary>/booked}" class="ojtStatValue" />
+            <Text text="{i18n>statusBooked}" class="ojtStatLabel" />
+          </VBox>
+          <VBox class="ojtStat ojtStatDone">
+            <Text text="{summary>/done}" class="ojtStatValue" />
+            <Text text="{i18n>statusCompleted}" class="ojtStatLabel" />
+          </VBox>
+        </HBox>
+      </VBox>
+
+      <f:GridList
         id="list"
-        noDataText="{i18n>noObservations}"
+        class="ojtGrid"
         busyIndicatorDelay="0"
+        updateFinished=".onUpdateFinished"
         items="{
           path: '/MyObservations',
           sorter: { path: 'statusOrder', group: '.groupByStatus' }
         }">
-        <ObjectListItem
-          title="{title}"
-          type="{= %{status} === 'Completed' ? 'Inactive' : 'Navigation' }"
-          press=".onItemPress">
-          <firstStatus>
-            <ObjectStatus
-              text="{ path: 'status', formatter: '.statusText' }"
-              state="{ path: 'status', formatter: '.statusState' }" />
-          </firstStatus>
-          <attributes>
-            <ObjectAttribute text="{ parts: ['itemId', { path: 'dueDate', targetType: 'any' }, 'durationMinutes'], formatter: '.itemLine' }" />
-            <ObjectAttribute
-              text="{ parts: ['status', { path: 'appointmentStart', targetType: 'any' }, { path: 'appointmentEnd', targetType: 'any' }, 'observerName', { path: 'completedOn', targetType: 'any' }], formatter: '.statusLine' }"
-              visible="{= %{status} !== 'ToBook' }" />
-          </attributes>
-        </ObjectListItem>
-      </List>
+        <f:customLayout>
+          <grid:GridBoxLayout boxMinWidth="19rem" />
+        </f:customLayout>
+        <f:noData>
+          <IllustratedMessage
+            illustrationType="sapIllus-NoActivities"
+            title="{i18n>noObservationsTitle}"
+            description="{i18n>noObservations}" />
+        </f:noData>
+        <CustomListItem
+          type="{= %{status} === 'Completed' ? 'Inactive' : 'Active' }"
+          press=".onItemPress"
+          class="ojtCardItem">
+          <VBox class="ojtCard" height="100%" justifyContent="SpaceBetween">
+            <customData>
+              <core:CustomData key="status" value="{status}" writeToDom="true" />
+            </customData>
+            <VBox>
+              <HBox justifyContent="SpaceBetween" alignItems="Center">
+                <Avatar
+                  src="{ path: 'status', formatter: '.statusIcon' }"
+                  displaySize="S"
+                  displayShape="Square"
+                  backgroundColor="{ path: 'status', formatter: '.statusAvatarColor' }"
+                  decorative="true" />
+                <ObjectStatus
+                  text="{ path: 'status', formatter: '.statusText' }"
+                  state="{ path: 'status', formatter: '.statusState' }"
+                  inverted="true" />
+              </HBox>
+              <Title text="{title}" wrapping="true" class="ojtCardTitle" />
+              <Text text="{itemId}" class="ojtCardId" />
+
+              <VBox class="ojtFacts">
+                <HBox alignItems="Center" class="ojtFact" visible="{= %{status} !== 'Completed' }">
+                  <core:Icon src="sap-icon://calendar" class="ojtFactIcon" />
+                  <Text text="{ parts: [{ path: 'dueDate', targetType: 'any' }, 'status'], formatter: '.dueText' }" />
+                </HBox>
+                <HBox alignItems="Center" class="ojtFact">
+                  <core:Icon src="sap-icon://fob-watch" class="ojtFactIcon" />
+                  <Text text="{ path: 'durationMinutes', formatter: '.durationText' }" />
+                </HBox>
+                <HBox alignItems="Center" class="ojtFact">
+                  <core:Icon src="sap-icon://map-2" class="ojtFactIcon" />
+                  <Text text="{location}" />
+                </HBox>
+              </VBox>
+
+              <Text
+                class="ojtCardNote"
+                text="{ parts: ['status', { path: 'appointmentStart', targetType: 'any' }, { path: 'appointmentEnd', targetType: 'any' }, 'observerName', { path: 'completedOn', targetType: 'any' }], formatter: '.statusLine' }"
+                visible="{= %{status} !== 'ToBook' }" />
+            </VBox>
+
+            <Button
+              text="{= %{status} === 'ToBook' ? ${i18n>ctaBook} : ${i18n>ctaView} }"
+              type="{= %{status} === 'ToBook' ? 'Emphasized' : 'Default' }"
+              visible="{= %{status} !== 'Completed' }"
+              width="100%"
+              press=".onItemPress"
+              class="ojtCardButton" />
+          </VBox>
+        </CustomListItem>
+      </f:GridList>
     </content>
   </Page>
 </mvc:View>
