@@ -20,7 +20,8 @@
         "uri": "odata/v4/admin/",
         "type": "OData",
         "settings": {
-          "odataVersion": "4.0"
+          "odataVersion": "4.0",
+          "localUri": "localService/metadata.xml"
         }
       }
     },
@@ -38,6 +39,11 @@
           }
         }
       }
+    },
+    "sourceTemplate": {
+      "id": "@sap/ux-app-migrator:freestyle",
+      "version": "1.33.0",
+      "toolsId": "c7f00a41-ad7e-4088-889a-3fec3fbeb5e3"
     }
   },
   "sap.ui": {

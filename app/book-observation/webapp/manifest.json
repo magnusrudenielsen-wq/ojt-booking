@@ -20,7 +20,8 @@
         "uri": "odata/v4/booking/",
         "type": "OData",
         "settings": {
-          "odataVersion": "4.0"
+          "odataVersion": "4.0",
+          "localUri": "localService/metadata.xml"
         }
       }
     },
@@ -38,6 +39,11 @@
           }
         }
       }
+    },
+    "sourceTemplate": {
+      "id": "@sap/ux-app-migrator:freestyle",
+      "version": "1.33.0",
+      "toolsId": "52ec72ad-781b-4257-a4ae-1e58c51d3805"
     }
   },
   "sap.ui": {
