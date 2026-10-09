@@ -24,6 +24,8 @@ entity Observers : cuid, managed {
                      on rules.observer = $self;
   blockedTimes   : Composition of many AvailabilityExceptions
                      on blockedTimes.observer = $self;
+  extraDays      : Composition of many AvailabilityDates
+                     on extraDays.observer = $self;
 }
 
 annotate Observers with @assert.unique: {userId: [userId]};
@@ -43,6 +45,14 @@ entity AvailabilityRules : cuid {
   dayName   : Association to Weekdays on dayName.code = weekday;
   startTime : Time    @mandatory;
   endTime   : Time    @mandatory;
+}
+
+/** One-off availability on a single date (in addition to the weekly rules), in local time. */
+entity AvailabilityDates : cuid {
+  observer  : Association to Observers;
+  day       : Date @mandatory;
+  startTime : Time @mandatory;
+  endTime   : Time @mandatory;
 }
 
 /** One-off blocked time, in local time. */

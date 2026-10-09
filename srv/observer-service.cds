@@ -23,6 +23,16 @@ service ObserverService @(path: '/odata/v4/observer') {
       endTime
     };
 
+  /** Available on one date only (in addition to the weekly rules) */
+  entity MyExtraDays      as
+    projection on ojt.AvailabilityDates {
+      ID,
+      observer,
+      day,
+      startTime,
+      endTime
+    };
+
   entity MyBlockedTimes   as
     projection on ojt.AvailabilityExceptions {
       ID,
@@ -67,6 +77,10 @@ service ObserverService @(path: '/odata/v4/observer') {
     observer @readonly @UI.Hidden;
   };
 
+  annotate MyExtraDays with {
+    observer @readonly @UI.Hidden;
+  };
+
   type CalendarEntry {
     startAt       : Timestamp;
     endAt         : Timestamp;
@@ -74,6 +88,11 @@ service ObserverService @(path: '/odata/v4/observer') {
     title         : String(255);
     text          : String(255);
     appointmentId : UUID;
+    ruleId        : UUID; // Open: the weekly rule this time comes from
+    ruleStart     : Time;
+    ruleEnd       : Time;
+    dateId        : UUID; // Open: the single-date availability this time comes from
+    blockId       : UUID; // Blocked: the blocked-time entry
   }
 
   function myCalendar(fromDate : Date, toDate : Date) returns many CalendarEntry;

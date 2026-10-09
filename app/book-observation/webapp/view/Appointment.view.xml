@@ -2,27 +2,34 @@
   controllerName="ojt.booking.controller.Appointment"
   xmlns="sap.m"
   xmlns:mvc="sap.ui.core.mvc"
-  xmlns:f="sap.ui.layout.form">
+  xmlns:core="sap.ui.core">
   <Page
     id="appointmentPage"
-    title="{i18n>appointmentTitle}"
-    showNavButton="true"
-    navButtonPress=".onBackToList">
+    class="ojtPage ojtAppointmentPage"
+    showHeader="false"
+    title="{i18n>appointmentTitle}">
     <content>
-      <ObjectHeader
-        id="appointmentHeader"
-        title="{itemTitle}"
-        responsive="true"
-        backgroundDesign="Solid">
-        <statuses>
+      <HBox alignItems="Center" class="ojtPageNav">
+        <Button
+          icon="sap-icon://nav-back"
+          text="{i18n>back}"
+          tooltip="{i18n>back}"
+          press=".onBackToList"
+          class="ojtBackButton" />
+        <Title text="{i18n>appointmentTitle}" titleStyle="H4" level="H1" class="ojtPageTitle" />
+      </HBox>
+      <VBox id="appointmentHeader" class="ojtItemHeader">
+        <HBox justifyContent="SpaceBetween" alignItems="Start" wrap="Wrap" class="ojtHeaderRow">
+          <VBox>
+            <Title text="{itemTitle}" titleStyle="H3" wrapping="true" class="ojtItemTitle" />
+            <Text text="{itemId}" class="ojtCardId" />
+          </VBox>
           <ObjectStatus
             text="{ parts: ['status', { path: 'endAt', targetType: 'any' }], formatter: '.statusText' }"
-            state="{ parts: ['status', 'endAt'], formatter: '.statusState' }" />
-        </statuses>
-        <attributes>
-          <ObjectAttribute text="{itemId}" />
-        </attributes>
-      </ObjectHeader>
+            state="{ parts: ['status', 'endAt'], formatter: '.statusState' }"
+            inverted="true" />
+        </HBox>
+      </VBox>
 
       <MessageStrip
         id="cutoffStrip"
@@ -30,45 +37,73 @@
         text="{i18n>changeCutoff}"
         type="Warning"
         showIcon="true"
-        class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+        class="ojtStrip" />
 
-      <f:SimpleForm
-        id="detailsForm"
-        title="{i18n>details}"
-        editable="false"
-        layout="ResponsiveGridLayout"
-        labelSpanL="3" labelSpanM="3" labelSpanS="12"
-        columnsL="1" columnsM="1">
-        <f:content>
-          <Label text="{i18n>when}" />
-          <Text text="{ parts: [{ path: 'startAt', targetType: 'any' }, { path: 'endAt', targetType: 'any' }], formatter: '.formatter.timeRange' }" />
-          <Label text="{i18n>observer}" />
-          <Text text="{observerName}" />
-          <Label text="{i18n>where}" />
-          <Text text="{location}" />
-          <Label text="{i18n>note}" visible="{= !!%{note} }" />
-          <Text text="{note}" visible="{= !!%{note} }" />
-        </f:content>
-      </f:SimpleForm>
+      <VBox id="detailsForm" class="ojtPanel">
+        <Title text="{i18n>details}" titleStyle="H5" class="ojtPanelTitle" />
+        <HBox alignItems="Start" class="ojtDetail">
+          <core:Icon src="sap-icon://appointment-2" class="ojtDetailIcon" />
+          <VBox>
+            <Label text="{i18n>when}" />
+            <Text text="{ parts: [{ path: 'startAt', targetType: 'any' }, { path: 'endAt', targetType: 'any' }], formatter: '.formatter.timeRange' }" class="ojtDetailValue" />
+          </VBox>
+        </HBox>
+        <HBox alignItems="Start" class="ojtDetail">
+          <core:Icon src="sap-icon://employee" class="ojtDetailIcon" />
+          <VBox>
+            <Label text="{i18n>observer}" />
+            <Text text="{observerName}" class="ojtDetailValue" />
+          </VBox>
+        </HBox>
+        <HBox alignItems="Start" class="ojtDetail">
+          <core:Icon src="sap-icon://map-2" class="ojtDetailIcon" />
+          <VBox>
+            <Label text="{i18n>where}" />
+            <Text text="{location}" class="ojtDetailValue" />
+          </VBox>
+        </HBox>
+        <HBox alignItems="Start" class="ojtDetail" visible="{= !!%{note} }">
+          <core:Icon src="sap-icon://notes" class="ojtDetailIcon" />
+          <VBox>
+            <Label text="{i18n>note}" />
+            <Text text="{note}" class="ojtDetailValue" />
+          </VBox>
+        </HBox>
+      </VBox>
 
-      <List
-        id="progressList"
-        headerText="{i18n>progress}"
-        showSeparators="Inner"
-        items="{ path: 'view>/steps', templateShareable: false }">
-        <StandardListItem
-          title="{view>title}"
-          description="{view>text}"
-          icon="{view>icon}"
-          highlight="{view>highlight}" />
-      </List>
+      <VBox class="ojtPanel" visible="{= ${view>/steps}.length > 0 }">
+        <Title text="{i18n>progress}" titleStyle="H5" class="ojtPanelTitle" />
+        <HBox
+          id="progressFlow"
+          renderType="Bare"
+          class="ojtFlow"
+          items="{ path: 'view>/steps', templateShareable: false }">
+          <VBox class="ojtFlowStep">
+            <customData>
+              <core:CustomData key="state" value="{view>state}" writeToDom="true" />
+            </customData>
+            <HBox class="ojtFlowNode" justifyContent="Center" alignItems="Center">
+              <core:Icon src="{view>icon}" class="ojtFlowIcon" />
+            </HBox>
+            <VBox class="ojtFlowLabel">
+              <Text text="{view>stateText}" textAlign="Center" class="ojtFlowState" />
+              <Text text="{view>title}" textAlign="Center" class="ojtFlowTitle" />
+              <Text text="{view>text}" textAlign="Center" class="ojtFlowText" />
+            </VBox>
+          </VBox>
+        </HBox>
+      </VBox>
+
+      <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="ojtPanel ojtActionCard" visible="{view>/canChange}">
+        <VBox class="ojtActionText">
+          <Title text="{i18n>actionsTitle}" titleStyle="H5" class="ojtPanelTitle" />
+          <Text text="{i18n>actionsText}" />
+        </VBox>
+        <HBox wrap="Wrap" class="ojtActions">
+          <Button id="cancelBookingButton" text="{i18n>cancelBooking}" type="Reject" press=".onCancelBooking" />
+          <Button id="moveButton" text="{i18n>moveBooking}" type="Emphasized" press=".onMove" />
+        </HBox>
+      </HBox>
     </content>
-    <footer>
-      <OverflowToolbar visible="{view>/canChange}">
-        <ToolbarSpacer />
-        <Button id="cancelBookingButton" text="{i18n>cancelBooking}" type="Reject" press=".onCancelBooking" />
-        <Button id="moveButton" text="{i18n>moveBooking}" type="Emphasized" press=".onMove" />
-      </OverflowToolbar>
-    </footer>
   </Page>
 </mvc:View>

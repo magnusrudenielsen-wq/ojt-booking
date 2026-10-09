@@ -11,6 +11,7 @@ service AdminService @(path: '/odata/v4/admin') {
   entity Qualifications   as projection on ojt.Qualifications;
   entity AvailabilityRules as projection on ojt.AvailabilityRules;
   entity AvailabilityExceptions as projection on ojt.AvailabilityExceptions;
+  entity AvailabilityDates as projection on ojt.AvailabilityDates;
 
   @readonly
   entity Weekdays         as projection on ojt.Weekdays;

@@ -10,30 +10,36 @@
       <VBox id="hero" class="ojtHero">
         <Title text="{i18n>observationsTitle}" titleStyle="H2" wrapping="true" class="ojtHeroTitle" />
         <Text text="{i18n>observationsInfo}" class="ojtHeroText" />
-        <HBox wrap="Wrap" class="ojtStats">
-          <VBox class="ojtStat ojtStatToBook">
-            <Text text="{summary>/toBook}" class="ojtStatValue" />
-            <Text text="{i18n>statusToBook}" class="ojtStatLabel" />
-          </VBox>
-          <VBox class="ojtStat ojtStatBooked">
-            <Text text="{summary>/booked}" class="ojtStatValue" />
-            <Text text="{i18n>statusBooked}" class="ojtStatLabel" />
-          </VBox>
-          <VBox class="ojtStat ojtStatDone">
-            <Text text="{summary>/done}" class="ojtStatValue" />
-            <Text text="{i18n>statusCompleted}" class="ojtStatLabel" />
-          </VBox>
-        </HBox>
       </VBox>
+
+      <IconTabBar
+        id="tabs"
+        class="ojtTabs"
+        headerMode="Inline"
+        expandable="false"
+        applyContentPadding="false"
+        backgroundDesign="Transparent"
+        headerBackgroundDesign="Transparent"
+        selectedKey="{obs>/tab}"
+        select=".onTabSelect">
+        <items>
+          <IconTabFilter key="open" text="{i18n>tabOpen}" count="{obs>/openCount}" />
+          <IconTabFilter key="completed" text="{i18n>tabCompleted}" count="{obs>/completedCount}" />
+        </items>
+      </IconTabBar>
 
       <f:GridList
         id="list"
         class="ojtGrid"
+        busy="{obs>/busy}"
         busyIndicatorDelay="0"
-        updateFinished=".onUpdateFinished"
         items="{
-          path: '/MyObservations',
-          sorter: { path: 'statusOrder', group: '.groupByStatus' }
+          path: 'obs>/items',
+          sorter: [
+            { path: 'statusOrder', group: '.groupByStatus' },
+            { path: 'dueDate' }
+          ],
+          filters: [{ path: 'status', operator: 'NE', value1: 'Completed' }]
         }">
         <f:customLayout>
           <grid:GridBoxLayout boxMinWidth="19rem" />
@@ -41,58 +47,58 @@
         <f:noData>
           <IllustratedMessage
             illustrationType="sapIllus-NoActivities"
-            title="{i18n>noObservationsTitle}"
-            description="{i18n>noObservations}" />
+            title="{= ${obs>/tab} === 'completed' ? ${i18n>noCompletedTitle} : ${i18n>noObservationsTitle} }"
+            description="{= ${obs>/tab} === 'completed' ? ${i18n>noCompleted} : ${i18n>noObservations} }" />
         </f:noData>
         <CustomListItem
-          type="{= %{status} === 'Completed' ? 'Inactive' : 'Active' }"
+          type="{= ${obs>status} === 'Completed' ? 'Inactive' : 'Active' }"
           press=".onItemPress"
           class="ojtCardItem">
           <VBox class="ojtCard" height="100%" justifyContent="SpaceBetween">
             <customData>
-              <core:CustomData key="status" value="{status}" writeToDom="true" />
+              <core:CustomData key="status" value="{obs>status}" writeToDom="true" />
             </customData>
             <VBox>
               <HBox justifyContent="SpaceBetween" alignItems="Center">
                 <Avatar
-                  src="{ path: 'status', formatter: '.statusIcon' }"
+                  src="{ path: 'obs>status', formatter: '.statusIcon' }"
                   displaySize="S"
                   displayShape="Square"
-                  backgroundColor="{ path: 'status', formatter: '.statusAvatarColor' }"
+                  backgroundColor="{ path: 'obs>status', formatter: '.statusAvatarColor' }"
                   decorative="true" />
                 <ObjectStatus
-                  text="{ path: 'status', formatter: '.statusText' }"
-                  state="{ path: 'status', formatter: '.statusState' }"
+                  text="{ path: 'obs>status', formatter: '.statusText' }"
+                  state="{ path: 'obs>status', formatter: '.statusState' }"
                   inverted="true" />
               </HBox>
-              <Title text="{title}" wrapping="true" class="ojtCardTitle" />
-              <Text text="{itemId}" class="ojtCardId" />
+              <Title text="{obs>title}" wrapping="true" class="ojtCardTitle" />
+              <Text text="{obs>itemId}" class="ojtCardId" />
 
               <VBox class="ojtFacts">
-                <HBox alignItems="Center" class="ojtFact" visible="{= %{status} !== 'Completed' }">
+                <HBox alignItems="Center" class="ojtFact" visible="{= ${obs>status} !== 'Completed' }">
                   <core:Icon src="sap-icon://calendar" class="ojtFactIcon" />
-                  <Text text="{ parts: [{ path: 'dueDate', targetType: 'any' }, 'status'], formatter: '.dueText' }" />
+                  <Text text="{ parts: ['obs>dueDate', 'obs>status'], formatter: '.dueText' }" />
                 </HBox>
                 <HBox alignItems="Center" class="ojtFact">
                   <core:Icon src="sap-icon://fob-watch" class="ojtFactIcon" />
-                  <Text text="{ path: 'durationMinutes', formatter: '.durationText' }" />
+                  <Text text="{ path: 'obs>durationMinutes', formatter: '.durationText' }" />
                 </HBox>
                 <HBox alignItems="Center" class="ojtFact">
                   <core:Icon src="sap-icon://map-2" class="ojtFactIcon" />
-                  <Text text="{location}" />
+                  <Text text="{obs>location}" />
                 </HBox>
               </VBox>
 
               <Text
                 class="ojtCardNote"
-                text="{ parts: ['status', { path: 'appointmentStart', targetType: 'any' }, { path: 'appointmentEnd', targetType: 'any' }, 'observerName', { path: 'completedOn', targetType: 'any' }], formatter: '.statusLine' }"
-                visible="{= %{status} !== 'ToBook' }" />
+                text="{ parts: ['obs>status', 'obs>appointmentStart', 'obs>appointmentEnd', 'obs>observerName', 'obs>completedOn'], formatter: '.statusLine' }"
+                visible="{= ${obs>status} !== 'ToBook' }" />
             </VBox>
 
             <Button
-              text="{= %{status} === 'ToBook' ? ${i18n>ctaBook} : ${i18n>ctaView} }"
-              type="{= %{status} === 'ToBook' ? 'Emphasized' : 'Default' }"
-              visible="{= %{status} !== 'Completed' }"
+              text="{= ${obs>status} === 'ToBook' ? ${i18n>ctaBook} : ${i18n>ctaView} }"
+              type="{= ${obs>status} === 'ToBook' ? 'Emphasized' : 'Default' }"
+              visible="{= ${obs>status} !== 'Completed' }"
               width="100%"
               press=".onItemPress"
               class="ojtCardButton" />

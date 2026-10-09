@@ -1,0 +1,60 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+  <!-- Opens when an entry in the calendar is clicked: details, and what can be done with it -->
+  <ResponsivePopover
+    id="entryPopover"
+    title="{view>/entry/heading}"
+    placement="Auto"
+    contentWidth="20rem"
+    busy="{view>/saving}"
+    busyIndicatorDelay="0">
+    <content>
+      <VBox class="sapUiSmallMargin ojtEntry">
+        <customData>
+          <core:CustomData key="kind" value="{view>/entry/kind}" writeToDom="true" />
+        </customData>
+        <HBox alignItems="Center" class="ojtEntryWhen">
+          <core:Icon src="{view>/entry/icon}" class="ojtEntryIcon" />
+          <Text text="{view>/entry/when}" class="ojtEntryWhenText" />
+        </HBox>
+        <Text text="{view>/entry/line1}" visible="{= !!${view>/entry/line1} }" class="ojtEntryLine" />
+        <Text text="{view>/entry/line2}" visible="{= !!${view>/entry/line2} }" class="ojtEntryLine ojtEntryMuted" />
+
+        <VBox class="ojtEntryActions" visible="{= ${view>/entry/kind} !== 'Booked' }">
+          <Button
+            id="blockDayButton"
+            text="{i18n>entryBlockDay}"
+            icon="sap-icon://locked"
+            width="100%"
+            visible="{= ${view>/entry/kind} === 'Open' &amp;&amp; !${view>/entry/dateId} }"
+            press=".onEntryBlockDay" />
+          <Button
+            id="removeDateButton"
+            text="{i18n>entryRemoveDate}"
+            icon="sap-icon://delete"
+            type="Reject"
+            width="100%"
+            visible="{= ${view>/entry/kind} === 'Open' &amp;&amp; !!${view>/entry/dateId} }"
+            press=".onEntryRemoveDate" />
+          <Button
+            id="removeRuleButton"
+            text="{i18n>entryRemoveRule}"
+            icon="sap-icon://delete"
+            type="Reject"
+            width="100%"
+            visible="{= ${view>/entry/kind} === 'Open' &amp;&amp; !!${view>/entry/ruleId} }"
+            press=".onEntryRemoveRule" />
+          <Button
+            id="removeBlockButton"
+            text="{i18n>entryRemoveBlock}"
+            icon="sap-icon://delete"
+            type="Reject"
+            width="100%"
+            visible="{= ${view>/entry/kind} === 'Blocked' }"
+            press=".onEntryRemoveBlock" />
+        </VBox>
+      </VBox>
+    </content>
+  </ResponsivePopover>
+</core:FragmentDefinition>

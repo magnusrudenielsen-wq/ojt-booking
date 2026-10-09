@@ -12,13 +12,14 @@ const tz = () => cfg().timezone || 'Europe/Copenhagen'
  */
 async function freeSlots({ observers, fromDay, toDay, durationMinutes, ignoreAppointmentId, extraBusy = [] }) {
   if (!observers.length) return []
-  const { AvailabilityRules, AvailabilityExceptions, Appointments } = cds.entities('ojt')
+  const { AvailabilityRules, AvailabilityDates, AvailabilityExceptions, Appointments } = cds.entities('ojt')
   const ids = observers.map(o => o.ID)
   const fromUtc = localToUtc(fromDay, '00:00', tz()).toISOString()
   const toUtc = localToUtc(addDays(toDay, 1), '00:00', tz()).toISOString()
 
-  const [rules, blocked, booked, outlook] = await Promise.all([
+  const [rules, dates, blocked, booked, outlook] = await Promise.all([
     SELECT.from(AvailabilityRules).where({ observer_ID: ids }),
+    SELECT.from(AvailabilityDates).where({ observer_ID: ids }).and('day >=', fromDay).and('day <=', toDay),
     SELECT.from(AvailabilityExceptions).where({ observer_ID: ids }).and('day >=', fromDay).and('day <=', toDay),
     SELECT.from(Appointments).where({ observer_ID: ids, status: 'Booked' }).and('startAt <', toUtc).and('endAt >', fromUtc),
     calendar.getBusy(observers.map(o => o.email).filter(Boolean), fromUtc, toUtc)
@@ -34,6 +35,7 @@ async function freeSlots({ observers, fromDay, toDay, durationMinutes, ignoreApp
     ]
     for (const s of freeSlotsFor({
       rules: rules.filter(r => r.observer_ID === o.ID),
+      dates: dates.filter(d => d.observer_ID === o.ID),
       blocked: blocked.filter(b => b.observer_ID === o.ID),
       busy, fromDay, toDay, durationMinutes, tz: tz(), notBefore
     })) slots.push({ ...s, observerId: o.ID, observerName: o.name })

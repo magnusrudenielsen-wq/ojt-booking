@@ -7,7 +7,8 @@
     title="{= ${view>/reschedule} ? ${i18n>reviewMoveTitle} : ${i18n>reviewTitle} }"
     contentWidth="30rem"
     busy="{view>/saving}"
-    busyIndicatorDelay="0">
+    busyIndicatorDelay="0"
+    afterClose=".onReviewClosed">
     <content>
       <f:SimpleForm
         editable="false"

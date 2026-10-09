@@ -1,7 +1,45 @@
 /* Observations overview: hero header + card grid. Colours come from the UI5 theme, so light/dark themes keep working. */
 
+/* Content sits in a centred column on wide screens; below that width the page uses the full width as before */
+.ojtPage {
+  --ojtMaxWidth: 72rem;
+}
+
 .ojtPage .sapMPageEnableScrolling {
   background: var(--sapBackgroundColor);
+  padding-left: max(0px, calc((100% - var(--ojtMaxWidth)) / 2));
+  padding-right: max(0px, calc((100% - var(--ojtMaxWidth)) / 2));
+  box-sizing: border-box;
+}
+
+
+/* Back button + page title, inside the content column (replaces the full-width page header) */
+.ojtPageNav {
+  gap: 0.5rem;
+  margin: 1rem 1.5rem 0;
+}
+
+.ojtPageNav + .ojtItemHeader {
+  margin-top: 0.75rem;
+}
+
+.ojtPageNav .ojtBackButton .sapMBtnInner {
+  border-radius: 999px;
+  padding: 0 0.875rem 0 0.5rem;
+  box-shadow: var(--sapContent_Shadow0);
+}
+
+.ojtPageNav .ojtPageTitle.sapMTitle {
+  margin-left: 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sapContent_LabelColor);
+}
+
+@media (max-width: 599px) {
+  .ojtPageNav {
+    margin: 0.75rem 1rem 0;
+  }
 }
 
 /* Hero */
@@ -27,31 +65,20 @@
   line-height: 1.5;
 }
 
-.ojtStats {
-  gap: 0.75rem;
-  margin-top: 1.25rem;
+/* Tabs */
+.ojtTabs.sapMITB {
+  width: auto !important;
+  margin: 0.75rem 1.5rem 0;
 }
 
-.ojtStat {
-  flex: 0 1 7rem;
-  min-width: 5.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(4px);
+.ojtTabs .sapMITH {
+  box-shadow: none;
+  border-bottom: 1px solid var(--sapList_BorderColor);
 }
 
-.ojtStat .ojtStatValue.sapMText {
-  color: var(--sapContent_ContrastTextColor);
-  font-size: 1.75rem;
+.ojtTabs .sapMITBFilter .sapMITBText {
+  font-size: 1rem;
   font-weight: 700;
-  line-height: 1.1;
-}
-
-.ojtStat .ojtStatLabel.sapMText {
-  color: var(--sapContent_ContrastTextColor);
-  opacity: 0.85;
-  font-size: 0.8125rem;
 }
 
 /* Grid */
@@ -154,6 +181,9 @@
   }
   .ojtGrid.sapFGridList {
     padding: 0 1rem 1.5rem;
+  }
+  .ojtTabs.sapMITB {
+    margin: 0.5rem 1rem 0;
   }
 }
 
@@ -324,9 +354,6 @@
   color: var(--sapContent_LabelColor);
 }
 
-.ojtSelectedText.sapMText {
-  font-weight: 700;
-}
 
 /* Narrow screens: one row per day, times wrap */
 @media (max-width: 899px) {
@@ -381,5 +408,258 @@
   .ojtPlannerBar .ojtWeekNav {
     width: 100%;
     justify-content: space-between;
+  }
+}
+
+/* ------------------------------------------------------------------ My booking (appointment) */
+
+.ojtHeaderRow {
+  gap: 0.75rem;
+}
+
+.ojtItemHeader .ojtCardId.sapMText {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--sapContent_LabelColor);
+}
+
+.ojtPanel {
+  margin: 1rem 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: var(--sapTile_Background);
+  border: 1px solid var(--sapTile_BorderColor, var(--sapList_BorderColor));
+  box-shadow: var(--sapContent_Shadow0);
+}
+
+.ojtAppointmentPage .sapMPageEnableScrolling {
+  padding-bottom: 2rem;
+}
+
+/* "Need to change it?" card with the move/cancel buttons */
+.ojtActionCard {
+  gap: 1rem;
+}
+
+.ojtActionCard .ojtActionText {
+  flex: 1 1 16rem;
+}
+
+.ojtActionCard .ojtActionText .ojtPanelTitle.sapMTitle {
+  margin-bottom: 0.25rem;
+}
+
+.ojtActionCard .ojtActionText .sapMText {
+  color: var(--sapContent_LabelColor);
+}
+
+.ojtActions {
+  gap: 0.5rem;
+}
+
+.ojtActions .sapMBtnInner {
+  border-radius: 0.5rem;
+}
+
+.ojtPanel .ojtPanelTitle.sapMTitle {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.ojtDetail {
+  padding: 0.5rem 0;
+}
+
+.ojtDetail .ojtDetailIcon {
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--sapBackgroundColor);
+  color: var(--sapContent_IconColor);
+  line-height: 2rem;
+  text-align: center;
+}
+
+.ojtDetail .ojtDetailValue.sapMText {
+  margin-top: 0.125rem;
+  font-weight: 600;
+}
+
+/* Document flow: one round node per step, joined by a line that turns green as steps complete */
+.ojtFlow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 0.5rem;
+}
+
+.ojtFlowStep {
+  position: relative;
+  align-items: center;
+  padding: 0 0.5rem;
+  text-align: center;
+  --ojtNode: var(--sapNeutralBorderColor, var(--sapList_BorderColor));
+}
+
+/* The line into this step from the previous one */
+.ojtFlowStep + .ojtFlowStep::before {
+  content: "";
+  position: absolute;
+  top: 1.625rem;
+  right: calc(50% + 1.875rem);
+  left: calc(-50% + 1.875rem);
+  height: 3px;
+  border-radius: 3px;
+  background: var(--sapList_BorderColor);
+}
+
+.ojtFlowStep[data-state="done"] { --ojtNode: var(--sapPositiveColor); }
+.ojtFlowStep[data-state="current"] { --ojtNode: var(--sapInformativeColor); }
+
+.ojtFlowStep[data-state="done"]::before,
+.ojtFlowStep[data-state="current"]::before {
+  background: var(--sapPositiveColor) !important;
+}
+
+.ojtFlowNode {
+  position: relative;
+  z-index: 1;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  border: 3px solid var(--ojtNode);
+  background: var(--sapTile_Background);
+  box-sizing: border-box;
+}
+
+.ojtFlowNode .ojtFlowIcon {
+  font-size: 1.25rem;
+  color: var(--sapContent_LabelColor);
+}
+
+.ojtFlowStep[data-state="done"] .ojtFlowNode,
+.ojtFlowStep[data-state="current"] .ojtFlowNode {
+  background: var(--ojtNode);
+}
+
+.ojtFlowStep[data-state="done"] .ojtFlowIcon,
+.ojtFlowStep[data-state="current"] .ojtFlowIcon {
+  color: var(--sapContent_ContrastTextColor);
+}
+
+/* "Lights up": a soft glow that pulses around the current step */
+.ojtFlowStep[data-state="current"] .ojtFlowNode {
+  animation: ojtGlow 2s ease-in-out infinite;
+}
+
+@keyframes ojtGlow {
+  0%, 100% { box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--sapInformativeColor) 25%, transparent); }
+  50% { box-shadow: 0 0 0 0.5rem color-mix(in srgb, var(--sapInformativeColor) 12%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ojtFlowStep[data-state="current"] .ojtFlowNode {
+    animation: none;
+    box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--sapInformativeColor) 25%, transparent);
+  }
+}
+
+.ojtFlowLabel {
+  margin-top: 0.75rem;
+  align-items: center;
+}
+
+.ojtFlowLabel .ojtFlowState.sapMText {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sapContent_LabelColor);
+}
+
+.ojtFlowStep[data-state="done"] .ojtFlowState.sapMText { color: var(--sapPositiveTextColor, var(--sapPositiveColor)); }
+.ojtFlowStep[data-state="current"] .ojtFlowState.sapMText { color: var(--sapInformativeTextColor, var(--sapInformativeColor)); }
+
+.ojtFlowLabel .ojtFlowTitle.sapMText {
+  margin-top: 0.125rem;
+  font-weight: 700;
+}
+
+.ojtFlowLabel .ojtFlowText.sapMText {
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--sapContent_LabelColor);
+}
+
+.ojtFlowStep[data-state="upcoming"] .ojtFlowTitle.sapMText {
+  color: var(--sapContent_LabelColor);
+}
+
+/* Narrow screens: the flow runs top to bottom */
+@media (max-width: 599px) {
+  .ojtFlow {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .ojtFlowStep {
+    flex-direction: row !important;
+    align-items: flex-start;
+    padding: 0;
+    text-align: left;
+  }
+  /* Vertical line from this node down to the next step (steps can have different heights) */
+  .ojtFlowStep + .ojtFlowStep::before {
+    display: none;
+  }
+  .ojtFlowStep:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 2.75rem;
+    bottom: -1.25rem;
+    left: calc(1.375rem - 1.5px);
+    width: 3px;
+    background: var(--sapList_BorderColor);
+  }
+  .ojtFlowStep:has(+ .ojtFlowStep[data-state="done"])::after,
+  .ojtFlowStep:has(+ .ojtFlowStep[data-state="current"])::after {
+    background: var(--sapPositiveColor);
+  }
+  .ojtFlowNode {
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+  .ojtFlowLabel {
+    margin: 0 0 0 0.875rem;
+    align-items: flex-start;
+  }
+  .ojtFlowLabel .sapMText {
+    text-align: left !important;
+  }
+}
+
+/* Footer buttons line up with the content column */
+.ojtPage .sapMPageFooter .sapMTB {
+  padding-left: max(1rem, calc((100% - var(--ojtMaxWidth)) / 2 + 1.5rem));
+  padding-right: max(1rem, calc((100% - var(--ojtMaxWidth)) / 2 + 1.5rem));
+}
+
+@media (max-width: 599px) {
+  .ojtPanel {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    padding: 1rem;
+  }
+  .ojtActions {
+    width: 100%;
+  }
+  .ojtActions .sapMBtn {
+    flex: 1 1 auto;
+  }
+  .ojtActions .sapMBtn .sapMBtnInner {
+    width: 100%;
   }
 }

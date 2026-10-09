@@ -32,20 +32,19 @@ sap.ui.define([
       const booked = a.status === "Booked";
       const held = booked && end < now;
       const reminderDone = booked && start - now < CUTOFF_HOURS * 3600e3;
-      const step = (title, text, done, current) => ({
-        title: this.getText(title),
-        text,
-        icon: done ? "sap-icon://sys-enter-2" : "sap-icon://circle-task",
-        highlight: done ? "Success" : (current ? "Information" : "None")
-      });
+      // One node per step in the document flow: done (green), current (blue, glowing) or upcoming (grey)
+      const step = (title, text, icon, done, current) => {
+        const state = done ? "done" : (current ? "current" : "upcoming");
+        return { title: this.getText(title), text, icon, state, stateText: this.getText("flow_" + state) };
+      };
       this.getModel("view").setData({
         canChange: booked && !held && start - now >= CUTOFF_HOURS * 3600e3,
         tooLate: booked && !held && start - now < CUTOFF_HOURS * 3600e3,
         steps: booked ? [
-          step("stepBooked", this.getText("stepBookedText"), true),
-          step("stepReminder", this.getText("stepReminderText"), reminderDone, !reminderDone),
-          step("stepObservation", this.formatter.timeRange(a.startAt, a.endAt), held, reminderDone && !held),
-          step("stepResult", this.getText("stepResultText"), false, held)
+          step("stepBooked", this.getText("stepBookedText"), "sap-icon://appointment-2", true),
+          step("stepReminder", this.getText("stepReminderText"), "sap-icon://bell", reminderDone, !reminderDone),
+          step("stepObservation", this.formatter.timeRange(a.startAt, a.endAt), "sap-icon://show", held, reminderDone && !held),
+          step("stepResult", this.getText("stepResultText"), "sap-icon://education", false, held)
         ] : []
       });
     },

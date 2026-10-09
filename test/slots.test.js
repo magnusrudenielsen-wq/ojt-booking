@@ -39,3 +39,10 @@ test('nothing before notBefore, nothing on days without rules', () => {
   })
   assert.deepStrictEqual(s.map(x => x.startAt), ['2026-10-13T09:00:00.000Z'])
 })
+
+test('one-off available dates add slots on that date only', () => {
+  const dates = [{ day: '2026-10-14', startTime: '13:00:00', endTime: '15:00:00' }] // a Wednesday
+  const s = freeSlotsFor({ rules, dates, fromDay: '2026-10-13', toDay: '2026-10-21', durationMinutes: 60, tz })
+  const wednesdays = s.filter(x => x.startAt.startsWith('2026-10-14') || x.startAt.startsWith('2026-10-21'))
+  assert.deepStrictEqual(wednesdays.map(x => x.startAt), ['2026-10-14T11:00:00.000Z', '2026-10-14T12:00:00.000Z'])
+})

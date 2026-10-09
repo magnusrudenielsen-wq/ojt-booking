@@ -6,12 +6,20 @@
   <Page
     id="bookPage"
     class="ojtPage"
+    showHeader="false"
     title="{= ${view>/reschedule} ? ${i18n>moveTitle} : ${i18n>bookTitle} }"
-    showNavButton="true"
-    navButtonPress=".onNavBack"
     busy="{view>/busy}"
     busyIndicatorDelay="0">
     <content>
+      <HBox alignItems="Center" class="ojtPageNav">
+        <Button
+          icon="sap-icon://nav-back"
+          text="{i18n>back}"
+          tooltip="{i18n>back}"
+          press=".onNavBack"
+          class="ojtBackButton" />
+        <Title text="{= ${view>/reschedule} ? ${i18n>moveTitle} : ${i18n>bookTitle} }" titleStyle="H4" level="H1" class="ojtPageTitle" />
+      </HBox>
       <VBox id="itemHeader" class="ojtItemHeader">
         <Title text="{title}" titleStyle="H3" wrapping="true" class="ojtItemTitle" />
         <HBox wrap="Wrap" class="ojtItemFacts">
@@ -120,25 +128,5 @@
         </HBox>
       </VBox>
     </content>
-    <footer>
-      <OverflowToolbar>
-        <Text text="{view>/selectedText}" visible="{= !!${view>/selectedSlot} }" wrapping="false" class="ojtSelectedText">
-          <layoutData>
-            <OverflowToolbarLayoutData shrinkable="true" />
-          </layoutData>
-        </Text>
-        <ToolbarSpacer />
-        <Button
-          id="continueButton"
-          type="Emphasized"
-          text="{i18n>continue}"
-          enabled="{= !!${view>/selectedSlot} }"
-          press=".onContinue">
-          <layoutData>
-            <OverflowToolbarLayoutData priority="NeverOverflow" />
-          </layoutData>
-        </Button>
-      </OverflowToolbar>
-    </footer>
   </Page>
 </mvc:View>

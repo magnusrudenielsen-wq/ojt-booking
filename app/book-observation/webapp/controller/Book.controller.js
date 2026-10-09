@@ -1,8 +1,9 @@
 sap.ui.define([
   "ojt/booking/controller/BaseController",
   "sap/ui/model/json/JSONModel",
-  "sap/ui/core/format/DateFormat"
-], (BaseController, JSONModel, DateFormat) => {
+  "sap/ui/core/format/DateFormat",
+  "sap/m/MessageToast"
+], (BaseController, JSONModel, DateFormat, MessageToast) => {
   "use strict";
 
   const WEEK_MS = 7 * 24 * 3600e3;
@@ -47,7 +48,6 @@ sap.ui.define([
         slots: [],
         week: { index: -1, count: 0, days: [] },
         selectedSlot: null,
-        selectedText: "",
         review: {}
       });
 
@@ -176,11 +176,7 @@ sap.ui.define([
     },
 
     _setSlot(slot) {
-      const model = this.getModel("view");
-      model.setProperty("/selectedSlot", slot);
-      model.setProperty("/selectedText", slot
-        ? this.getText("selectedSlot", [this.formatter.timeRange(slot.startAt, slot.endAt), slot.observerName])
-        : "");
+      this.getModel("view").setProperty("/selectedSlot", slot);
     },
 
     async onObserverChange() {
@@ -208,18 +204,17 @@ sap.ui.define([
       if (next >= 0) { this._showWeek(next); }
     },
 
+    /** Clicking a time goes straight to the review dialog */
     onSlotPress(event) {
-      const slot = event.getSource().getBindingContext("view").getObject();
-      const current = this.getModel("view").getProperty("/selectedSlot");
-      const same = current && current.startAt === slot.startAt && current.observerId === slot.observerId;
-      this._setSlot(same ? null : slot);
+      this._setSlot(event.getSource().getBindingContext("view").getObject());
+      this._openReview();
     },
 
     onErrorClose() {
       this.getModel("view").setProperty("/error", "");
     },
 
-    async onContinue() {
+    async _openReview() {
       const model = this.getModel("view");
       const slot = model.getProperty("/selectedSlot");
       const item = this.getView().getBindingContext().getObject();
@@ -242,6 +237,11 @@ sap.ui.define([
       this._dialog.close();
     },
 
+    /** However the dialog closes (Cancel, Escape, after booking), the time is no longer picked */
+    onReviewClosed() {
+      this._setSlot(null);
+    },
+
     async onConfirm() {
       const model = this.getModel("view");
       const slot = model.getProperty("/selectedSlot");
@@ -256,10 +256,15 @@ sap.ui.define([
             note: model.getProperty("/review/note") || null
           });
         this._dialog.close();
-        this.getRouter().navTo("booked", {
-          appointmentId: result.ID,
-          "?query": this._appointmentId ? { moved: "1" } : {}
-        }, true);
+        // Back to the overview, with a short confirmation at the bottom of the screen
+        const message = this.getText(this._appointmentId ? "toastMoved" : "toastBooked", [
+          model.getProperty("/review/itemTitle"),
+          this.formatter.timeRange(result.startAt || slot.startAt, result.endAt || slot.endAt),
+          result.observerName || slot.observerName
+        ]);
+        this.getRouter().navTo("observations", {}, true);
+        // closeOnBrowserNavigation: the navigation above would otherwise close the toast right away
+        MessageToast.show(message, { duration: 5000, width: "30rem", closeOnBrowserNavigation: false });
       } catch (e) {
         // Most likely someone else took the slot a moment ago: show why and refresh the times
         this._dialog.close();

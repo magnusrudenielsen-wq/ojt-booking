@@ -1,0 +1,219 @@
+/* Same look as the Book Observation app: centred column, blue header card, cards for content.
+   Colours come from the UI5 theme, so light/dark themes keep working. */
+
+/* Content sits in a centred column on wide screens; below that width the page uses the full width */
+.ojtPage {
+  --ojtMaxWidth: 72rem;
+}
+
+.ojtPage .sapMPageEnableScrolling {
+  background: var(--sapBackgroundColor);
+  padding-left: max(0px, calc((100% - var(--ojtMaxWidth)) / 2));
+  padding-right: max(0px, calc((100% - var(--ojtMaxWidth)) / 2));
+  padding-bottom: 2rem;
+  box-sizing: border-box;
+}
+
+/* Hero */
+.ojtHero {
+  margin: 1.5rem 1.5rem 0.5rem;
+  padding: 1.75rem 2rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--sapBrandColor) 0%, var(--sapButton_Emphasized_Hover_Background, var(--sapBrandColor)) 100%);
+  box-shadow: var(--sapContent_Shadow1);
+}
+
+.ojtHero .ojtHeroTitle.sapMTitle {
+  color: var(--sapContent_ContrastTextColor);
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.ojtHero .ojtHeroText.sapMText {
+  color: var(--sapContent_ContrastTextColor);
+  opacity: 0.85;
+  max-width: 44rem;
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Tabs */
+.ojtTabs.sapMITB {
+  width: auto !important;
+  margin: 0.75rem 1.5rem 0;
+}
+
+.ojtTabs .sapMITH {
+  box-shadow: none;
+  border-bottom: 1px solid var(--sapList_BorderColor);
+}
+
+.ojtTabs .sapMITBFilter .sapMITBText {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.ojtTabs .sapMITBContainerContent,
+.ojtTabs .sapMITBContent {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Cards */
+.ojtPanel {
+  margin-top: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: var(--sapTile_Background);
+  border: 1px solid var(--sapTile_BorderColor, var(--sapList_BorderColor));
+  box-shadow: var(--sapContent_Shadow0);
+}
+
+.ojtPanelHead {
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Title + description stacked: no gap between them */
+.ojtPanelHead.sapMVBox {
+  gap: 0;
+}
+
+.ojtPanelHead .ojtPanelHeadText {
+  flex: 1 1 20rem;
+}
+
+.ojtPanel .ojtPanelTitle.sapMTitle {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.ojtPanel .ojtPanelInfo.sapMText {
+  margin-top: 0.25rem;
+  max-width: 44rem;
+  line-height: 1.45;
+  color: var(--sapContent_LabelColor);
+}
+
+.ojtPanelHead .sapMBtn .sapMBtnInner {
+  border-radius: 0.5rem;
+}
+
+/* Tables and lists inside a card: no own background or outer border */
+.ojtTable.sapMList,
+.ojtTable .sapMListTbl,
+.ojtTable .sapMListUl,
+.ojtTable .sapMLIB,
+.ojtTable .sapMListTblHeader,
+.ojtTable .sapMListTblHeaderCell {
+  background: transparent;
+}
+
+.ojtTable .sapMListTblHeaderCell {
+  font-weight: 700;
+  color: var(--sapContent_LabelColor);
+}
+
+.ojtTable .sapMListTbl,
+.ojtTable .sapMListUl {
+  border: none;
+}
+
+.ojtStrong.sapMText {
+  font-weight: 600;
+}
+
+/* Calendar card */
+.ojtCalendarPanel {
+  padding: 0.75rem 1rem 1rem;
+}
+
+.ojtCalendarPanel .sapMSinglePC,
+.ojtCalendarPanel .sapMSinglePCHeader,
+.ojtCalendarPanel .sapMIBar,
+.ojtCalendarPanel .sapMTB {
+  background: transparent;
+  box-shadow: none;
+}
+
+.ojtCalendarHint {
+  gap: 0.5rem;
+  margin: 0.25rem 0.5rem 0.5rem;
+}
+
+.ojtCalendarHint .sapMText,
+.ojtDialogHint.sapMText {
+  color: var(--sapContent_LabelColor);
+  line-height: 1.4;
+}
+
+.ojtCalendarHint .ojtCalendarHintIcon {
+  color: var(--sapContent_IconColor);
+}
+
+.ojtCalendarPanel .ojtLegend {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--sapList_BorderColor);
+  background: transparent;
+}
+
+/* Popover for a clicked calendar entry */
+.ojtEntry {
+  gap: 0.375rem;
+}
+
+.ojtEntryWhen {
+  gap: 0.5rem;
+}
+
+.ojtEntry .ojtEntryIcon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  line-height: 2rem;
+  text-align: center;
+  color: var(--sapContent_ContrastTextColor);
+  background: var(--sapNeutralColor);
+}
+
+.ojtEntry[data-kind="Open"] .ojtEntryIcon { background: var(--sapPositiveColor); }
+.ojtEntry[data-kind="Booked"] .ojtEntryIcon { background: var(--sapInformativeColor); }
+.ojtEntry[data-kind="Blocked"] .ojtEntryIcon { background: var(--sapCriticalColor); }
+
+.ojtEntry .ojtEntryWhenText.sapMText {
+  font-weight: 700;
+}
+
+.ojtEntry .ojtEntryLine.sapMText {
+  line-height: 1.4;
+}
+
+.ojtEntry .ojtEntryMuted.sapMText {
+  color: var(--sapContent_LabelColor);
+}
+
+.ojtEntryActions {
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--sapList_BorderColor);
+}
+
+.ojtEntryActions .sapMBtnInner {
+  border-radius: 0.5rem;
+}
+
+@media (max-width: 599px) {
+  .ojtHero {
+    margin: 1rem 1rem 0.5rem;
+    padding: 1.25rem;
+  }
+  .ojtTabs.sapMITB {
+    margin: 0.5rem 1rem 0;
+  }
+  .ojtPanel {
+    padding: 1rem;
+  }
+}

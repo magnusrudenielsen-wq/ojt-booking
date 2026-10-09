@@ -1,0 +1,49 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:f="sap.ui.layout.form">
+  <!-- Opens after dragging across the calendar: pre-filled with the day and times that were dragged -->
+  <Dialog
+    id="quickAddDialog"
+    title="{view>/quick/dayText}"
+    contentWidth="26rem"
+    busy="{view>/saving}"
+    busyIndicatorDelay="0">
+    <content>
+      <VBox class="sapUiSmallMargin">
+        <SegmentedButton id="quickKind" selectedKey="{view>/quick/kind}" width="100%">
+          <items>
+            <SegmentedButtonItem key="open" text="{i18n>quickOpen}" icon="sap-icon://accept" />
+            <SegmentedButtonItem key="block" text="{i18n>quickBlock}" icon="sap-icon://locked" enabled="{= !${view>/quick/past} }" />
+          </items>
+        </SegmentedButton>
+        <CheckBox
+          id="quickWeekly"
+          text="{view>/quick/weeklyLabel}"
+          selected="{view>/quick/weekly}"
+          enabled="{= !${view>/quick/past} }"
+          visible="{= ${view>/quick/kind} === 'open' }"
+          class="sapUiSmallMarginTop" />
+        <Text
+          text="{= ${view>/quick/kind} === 'block' ? ${view>/quick/blockHint} : (${view>/quick/weekly} ? ${view>/quick/ruleHint} : ${view>/quick/dayHint}) }"
+          class="sapUiTinyMarginTop ojtDialogHint" />
+      </VBox>
+      <f:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanL="4" labelSpanM="4" labelSpanS="12" columnsL="1" columnsM="1">
+        <f:content>
+          <Label text="{i18n>from}" labelFor="quickStart" required="true" />
+          <TimePicker id="quickStart" value="{view>/quick/startTime}" valueFormat="HH:mm:ss" displayFormat="HH:mm" minutesStep="15" />
+          <Label text="{i18n>to}" labelFor="quickEnd" required="true" />
+          <TimePicker id="quickEnd" value="{view>/quick/endTime}" valueFormat="HH:mm:ss" displayFormat="HH:mm" minutesStep="15" />
+          <Label text="{i18n>reason}" labelFor="quickReason" visible="{= ${view>/quick/kind} === 'block' }" />
+          <Input id="quickReason" value="{view>/quick/reason}" maxLength="120" placeholder="{i18n>reasonPlaceholder}" visible="{= ${view>/quick/kind} === 'block' }" />
+        </f:content>
+      </f:SimpleForm>
+    </content>
+    <beginButton>
+      <Button id="saveQuickButton" type="Emphasized" text="{i18n>save}" press=".onSaveQuick" />
+    </beginButton>
+    <endButton>
+      <Button text="{i18n>cancel}" press=".onCloseDialog" />
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>
